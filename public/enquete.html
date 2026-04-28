@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>ZapMix — Configurar Enquete</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/png" href="/media/favicon.png">
+<link rel="shortcut icon" href="/media/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+<style>
+/* (mesmo estilo que você já tinha - não alterei) */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #f1f5f9;
+  background-image: linear-gradient(145deg, #f8fafc 0%, #eef2f6 100%);
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #1e293b;
+  line-height: 1.5;
+  padding-bottom: 40px;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
+::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #90d105; }
+header {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 32px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #d1d5db;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+}
+.logo-area { display: flex; align-items: center; gap: 14px; }
+.logo-img { height: 40px; width: auto; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.05)); transition: transform 0.2s ease; }
+.logo-img:hover { transform: scale(1.02); }
+.app-title {
+  font-size: 1.65rem; font-weight: 800;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  background-clip: text; -webkit-background-clip: text; color: transparent;
+}
+.app-sub { font-size: 0.68rem; color: #90d105; letter-spacing: 0.3px; margin-top: 2px; font-weight: 500; }
+.btn-voltar {
+  background: #f1f5f9; border: 1px solid #e2e8f0; padding: 8px 20px; border-radius: 32px;
+  font-weight: 600; font-size: 0.75rem; cursor: pointer; transition: 0.2s; color: #1e293b;
+  font-family: 'Inter', sans-serif; text-decoration: none;
+}
+.btn-voltar:hover { transform: translateY(-1px); background: #ffffff; border-color: #90d105; }
+main { display: grid; grid-template-columns: 1fr; gap: 24px; padding: 32px; max-width: 1000px; margin: 0 auto; }
+.card-white {
+  background: #ffffff; border-radius: 28px; padding: 24px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.05);
+  border: 1px solid #e9eef3; transition: all 0.2s;
+}
+.card-white:hover { border-color: #cbd5e1; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+.section-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 20px; font-weight: 700; font-size: 1.25rem;
+  border-left: 4px solid #90d105; padding-left: 16px; color: #0f172a;
+}
+hr { border: none; height: 1px; background: linear-gradient(90deg, transparent, #cbd5e1, #cbd5e1, transparent); margin: 24px 0; }
+label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #475569; margin-top: 14px; margin-bottom: 5px; display: block; }
+input, textarea {
+  width: 100%; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 20px;
+  padding: 12px 16px; color: #0f172a; font-family: 'Inter', monospace; font-size: 0.85rem;
+  transition: 0.2s; outline: none;
+}
+input:focus, textarea:focus { border-color: #90d105; box-shadow: 0 0 0 3px rgba(144,209,5,0.15); }
+button {
+  background: #f1f5f9; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 32px;
+  font-weight: 600; font-size: 0.75rem; cursor: pointer; transition: 0.2s; color: #1e293b;
+  margin-right: 8px; margin-top: 8px; font-family: 'Inter', sans-serif;
+}
+button:hover { transform: translateY(-1px); background: #ffffff; border-color: #90d105; }
+button.primary-green { background: #90d105; color: #0f2e00; border-color: #7cb518; font-weight: 700; }
+button.yellow-warning { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+button.red-danger { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+.opcoes-container { margin-bottom: 20px; }
+.opcao-card {
+  background: #f8fafc; border-radius: 20px; padding: 16px; margin-bottom: 16px;
+  border: 1px solid #e2e8f0; transition: all 0.2s;
+}
+.opcao-card:hover { border-color: #90d105; }
+.opcao-header-card {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0;
+}
+.opcao-numero { font-weight: 700; font-size: 0.9rem; color: #1e293b; }
+.btn-remover { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; margin: 0; }
+.btn-remover:hover { background: #fecaca; transform: translateY(-1px); }
+.opcao-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+.quantidade-select {
+  display: flex; align-items: center; gap: 15px; margin-bottom: 20px;
+  padding: 12px; background: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;
+}
+.quantidade-select label { margin: 0; text-transform: none; }
+.quantidade-select select { width: auto; padding: 8px 16px; background: white; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 0.85rem; }
+.preview-box {
+  background: linear-gradient(115deg, #fefce8, #f8fafc); border-radius: 20px;
+  padding: 20px; margin-top: 20px; border: 1px solid #d9f0b0;
+}
+.preview-pergunta {
+  text-align: center; padding: 12px; background: #ffffff; border-radius: 40px;
+  margin-bottom: 20px; font-weight: 600; font-size: 1rem; color: #1e293b; border: 1px solid #90d105;
+}
+.preview-opcao { margin-bottom: 15px; }
+.preview-opcao-header { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #1e293b; }
+.preview-barra { height: 10px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
+.preview-progresso { height: 100%; border-radius: 10px; transition: width 0.3s ease; }
+.link-card { background: #0f172a; border-radius: 20px; padding: 16px; margin-top: 20px; text-align: center; }
+.link-card p { color: #94a3b8; font-size: 0.7rem; margin-bottom: 8px; }
+.link-card code { background: #1e293b; color: #90d105; padding: 8px 16px; border-radius: 40px; font-size: 0.8rem; display: inline-block; }
+.btn-copiar { background: #90d105; color: #0f2e00; border: none; padding: 6px 16px; border-radius: 30px; font-size: 0.7rem; margin-top: 8px; cursor: pointer; }
+.btn-copiar:hover { background: #a0e015; transform: translateY(-1px); }
+.footer-credits { text-align: center; margin-top: 20px; padding: 14px 24px; font-size: 0.7rem; color: #64748b; border-top: 1px solid #e2e8f0; background: #ffffffaa; backdrop-filter: blur(4px); border-radius: 60px; width: fit-content; margin-left: auto; margin-right: auto; }
+@media (max-width: 700px) {
+  main { padding: 20px; }
+  header { padding: 12px 20px; }
+  .logo-img { height: 34px; }
+  .app-title { font-size: 1.35rem; }
+  .opcao-row { grid-template-columns: 1fr; }
+  .quantidade-select { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-area">
+    <img class="logo-img" src="/media/logotipo.png" alt="ZapMix" onerror="this.style.display='none';">
+    <div><div class="app-title">ZapMix</div><div class="app-sub">Configurar Enquete</div></div>
+  </div>
+  <button class="btn-voltar" onclick="window.location.href='/'">← Voltar ao WhatsApp</button>
+</header>
+<main>
+  <div class="card-white">
+    <div class="section-header">⚙️ Configurar Enquete</div>
+    <label>📝 Pergunta da Enquete</label>
+    <input type="text" id="pergunta-input" placeholder="Ex: O que você mais gosta?" value="O que você mais gosta?">
+    <button class="primary-green" style="margin-top:8px;" onclick="salvarPergunta()">💾 Salvar Pergunta</button>
+    <hr>
+    <div class="quantidade-select">
+      <label>📊 Número de opções:</label>
+      <select id="quantidade-opcoes" onchange="alterarQuantidadeOpcoes()">
+        <option value="2">2 opções</option><option value="3" selected>3 opções</option>
+        <option value="4">4 opções</option><option value="5">5 opções</option><option value="6">6 opções</option>
+      </select>
+    </div>
+    <div id="opcoes-container" class="opcoes-container"></div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+      <button class="primary-green" onclick="adicionarOpcao()">➕ Adicionar Opção</button>
+      <button class="primary-green" onclick="salvarOpcoes()">💾 Salvar Opções</button>
+      <button class="yellow-warning" id="toggle-btn" onclick="toggleEnquete()">⏸️ Pausar</button>
+      <button class="red-danger" onclick="resetarVotos()">🔄 Resetar Votos</button>
+    </div>
+    <hr>
+    <div class="section-header">👁️ Preview da Enquete</div>
+    <div class="preview-box" id="preview-box">
+      <div class="preview-pergunta" id="preview-pergunta">O que você mais gosta?</div>
+      <div id="preview-opcoes"></div>
+    </div>
+    <div class="link-card">
+      <p>🔗 URL para colocar no vMix (Web Browser)</p>
+      <code id="vmix-url">carregando...</code>
+      <div><button class="btn-copiar" onclick="copiarLink()">📋 Copiar Link</button></div>
+    </div>
+  </div>
+</main>
+<div class="footer-credits">Desenvolvido por Anderson Souza — ZapMix © 2026</div>
+
+<script>
+let opcoesAtuais = [];
+let perguntaAtual = "O que você mais gosta?";
+
+async function api(path, options = {}) {
+  const res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...options });
+  return res.json();
+}
+function getVmixUrl() { return window.location.origin + "/vmix.html"; }
+function copiarLink() { navigator.clipboard.writeText(getVmixUrl()).then(() => alert("✅ Link copiado: " + getVmixUrl())); }
+
+async function carregarPergunta() {
+  try {
+    const res = await fetch("/api/enquete/pergunta");
+    const data = await res.json();
+    if (data.pergunta) {
+      perguntaAtual = data.pergunta;
+      document.getElementById("pergunta-input").value = perguntaAtual;
+      document.getElementById("preview-pergunta").innerHTML = perguntaAtual;
+    }
+  } catch(e) { console.log("Usando pergunta padrão"); }
+}
+async function salvarPergunta() {
+  const pergunta = document.getElementById("pergunta-input").value.trim();
+  if (!pergunta) { alert("Digite uma pergunta"); return; }
+  await api("/api/enquete/pergunta", { method: "POST", body: JSON.stringify({ pergunta }) });
+  perguntaAtual = pergunta;
+  document.getElementById("preview-pergunta").innerHTML = pergunta;
+  alert("✅ Pergunta salva!");
+}
+async function carregarOpcoes() {
+  const enquete = await api("/api/enquete");
+  if (enquete.opcoes && enquete.opcoes.length > 0) {
+    opcoesAtuais = enquete.opcoes.map(op => ({
+      id: op.id,
+      nome: op.nome,
+      cor: op.cor,
+      palavrasChave: op.palavrasChave || []
+    }));
+    document.getElementById("quantidade-opcoes").value = opcoesAtuais.length;
+  } else {
+    opcoesAtuais = [
+      { id: "opcao1", nome: "Opção 1", cor: "#ef4444", palavrasChave: [] },
+      { id: "opcao2", nome: "Opção 2", cor: "#f59e0b", palavrasChave: [] },
+      { id: "opcao3", nome: "Opção 3", cor: "#3b82f6", palavrasChave: [] }
+    ];
+  }
+  renderizarFormularioOpcoes();
+  await carregarPreview();
+  const toggleBtn = document.getElementById("toggle-btn");
+  toggleBtn.textContent = enquete.ativa ? "⏸️ Pausar Enquete" : "▶️ Ativar Enquete";
+  toggleBtn.className = enquete.ativa ? "yellow-warning" : "primary-green";
+}
+function renderizarFormularioOpcoes() {
+  const container = document.getElementById("opcoes-container");
+  const cores = ["#ef4444","#f59e0b","#3b82f6","#10b981","#8b5cf6","#ec4899"];
+  container.innerHTML = opcoesAtuais.map((op, index) => `
+    <div class="opcao-card" data-index="${index}">
+      <div class="opcao-header-card">
+        <span class="opcao-numero">🔹 Opção ${index+1}</span>
+        <button class="btn-remover" onclick="removerOpcao(${index})" ${opcoesAtuais.length<=2 ? 'disabled style="opacity:0.5"' : ''}>✖ Remover</button>
+      </div>
+      <div class="opcao-row">
+        <div><label>Nome (exibido)</label><input type="text" class="opcao-nome-input" value="${escapeHtml(op.nome)}" placeholder="Ex: Coração"></div>
+        <div><label>ID (identificador)</label><input type="text" class="opcao-id-input" value="${escapeHtml(op.id)}" placeholder="ex: coracao"></div>
+      </div>
+      <div class="opcao-row">
+        <div><label>Cor</label><input type="color" class="opcao-cor-input" value="${op.cor || cores[index%cores.length]}"></div>
+        <div><label>Palavras-chave (separadas por vírgula)</label><input type="text" class="opcao-palavras-input" value="${escapeHtml(op.palavrasChave ? op.palavrasChave.join(', ') : '')}" placeholder="ex: coração, coracao, cardio"></div>
+      </div>
+    </div>
+  `).join("");
+}
+function adicionarOpcao() {
+  const novoId = `opcao${opcoesAtuais.length+1}`;
+  opcoesAtuais.push({ id: novoId, nome: `Opção ${opcoesAtuais.length+1}`, cor: "#90d105", palavrasChave: [] });
+  renderizarFormularioOpcoes();
+}
+function removerOpcao(index) {
+  if (opcoesAtuais.length <= 2) { alert("Mínimo de 2 opções"); return; }
+  opcoesAtuais.splice(index,1);
+  renderizarFormularioOpcoes();
+}
+function alterarQuantidadeOpcoes() {
+  const qtd = parseInt(document.getElementById("quantidade-opcoes").value);
+  while (opcoesAtuais.length < qtd) {
+    const idx = opcoesAtuais.length+1;
+    opcoesAtuais.push({ id: `opcao${idx}`, nome: `Opção ${idx}`, cor: "#90d105", palavrasChave: [] });
+  }
+  while (opcoesAtuais.length > qtd) opcoesAtuais.pop();
+  renderizarFormularioOpcoes();
+}
+function coletarOpcoesFormulario() {
+  const opcoes = [];
+  document.querySelectorAll(".opcao-card").forEach((card, idx) => {
+    const nomeInput = card.querySelector(".opcao-nome-input");
+    const idInput = card.querySelector(".opcao-id-input");
+    const corInput = card.querySelector(".opcao-cor-input");
+    const palavrasInput = card.querySelector(".opcao-palavras-input");
+    const palavrasChave = palavrasInput ? palavrasInput.value.split(',').map(p => p.trim().toLowerCase()).filter(p => p) : [];
+    opcoes.push({
+      id: idInput ? idInput.value.trim() || `opcao${idx+1}` : `opcao${idx+1}`,
+      nome: nomeInput ? nomeInput.value.trim() || `Opção ${idx+1}` : `Opção ${idx+1}`,
+      cor: corInput ? corInput.value : "#90d105",
+      votos: 0,
+      palavrasChave: palavrasChave
+    });
+  });
+  return opcoes;
+}
+async function salvarOpcoes() {
+  const opcoes = coletarOpcoesFormulario();
+  if (opcoes.length < 2) { alert("Mínimo de 2 opções"); return; }
+  await api("/api/enquete/opcoes", { method: "POST", body: JSON.stringify({ opcoes }) });
+  alert(`✅ ${opcoes.length} opções salvas!`);
+  await carregarPreview();
+}
+async function carregarPreview() {
+  try {
+    const enquete = await api("/api/enquete");
+    const container = document.getElementById("preview-opcoes");
+    if (!enquete.opcoes || enquete.opcoes.length === 0) {
+      container.innerHTML = '<div style="text-align:center; padding:20px;">Nenhuma opção configurada</div>';
+      return;
+    }
+    container.innerHTML = enquete.opcoes.map(op => `
+      <div class="preview-opcao">
+        <div class="preview-opcao-header"><span>${escapeHtml(op.nome)}</span><span>${op.porcentagem||0}%</span></div>
+        <div class="preview-barra"><div class="preview-progresso" style="width: ${op.porcentagem||0}%; background: ${op.cor}; height:100%;"></div></div>
+      </div>
+    `).join("");
+  } catch(e) { console.log("Erro preview:", e); }
+}
+async function resetarVotos() {
+  if (confirm("Resetar todos os votos?")) { await api("/api/enquete/resetar", { method: "POST" }); await carregarPreview(); alert("Votos resetados!"); }
+}
+async function toggleEnquete() {
+  await api("/api/enquete/toggle", { method: "POST" });
+  const enquete = await api("/api/enquete");
+  const toggleBtn = document.getElementById("toggle-btn");
+  toggleBtn.textContent = enquete.ativa ? "⏸️ Pausar Enquete" : "▶️ Ativar Enquete";
+  toggleBtn.className = enquete.ativa ? "yellow-warning" : "primary-green";
+  await carregarPreview();
+}
+function escapeHtml(str) { if (!str) return ""; return str.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m] || m)); }
+document.getElementById("vmix-url").textContent = getVmixUrl();
+carregarPergunta();
+carregarOpcoes();
+setInterval(carregarPreview, 3000);
+</script>
+</body>
+</html>

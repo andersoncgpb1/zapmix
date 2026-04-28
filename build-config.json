@@ -1,0 +1,25 @@
+{
+  "appId": "com.zapmix.app",
+  "productName": "ZapMix",
+  "directories": {
+    "output": "release"
+  },
+  "files": [
+    "**/*",
+    "!**/*.map",
+    "!**/*.ts",
+    "!**/test/**",
+    "!**/tests/**",
+    "!**/example/**",
+    "!**/examples/**",
+    "!node_modules/.cache"
+  ],
+  "win": {
+    "target": "portable",
+    "icon": "public/media/logotipo.ico",
+    "compression": "maximum"
+  },
+  "portable": {
+    "artifactName": "ZapMix.exe"
+  }
+}

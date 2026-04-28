@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Carregando ZapMix...</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: white;
+}
+.loading-container {
+  text-align: center;
+}
+.logo {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 30px;
+  animation: pulse 1.5s infinite;
+}
+h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+.loader {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255,255,255,0.3);
+  border-top: 4px solid #90d105;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+p {
+  color: #94a3b8;
+  margin-top: 20px;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
+</style>
+</head>
+<body>
+<div class="loading-container">
+  <img class="logo" src="public/media/logotipo.png" alt="ZapMix" onerror="this.style.display='none'">
+  <h1>ZapMix</h1>
+  <div class="loader"></div>
+  <p>Iniciando servidor...</p>
+  <p>Aguarde um momento</p>
+</div>
+</body>
+</html>

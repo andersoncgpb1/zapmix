@@ -1,0 +1,33 @@
+{
+  "pergunta": "O que você mais gosta?",
+  "opcoes": [
+    {
+      "id": "ouvido",
+      "nome": "Ouvido",
+      "cor": "#ef4444",
+      "palavrasChave": [
+        "ouvido",
+        "ouvido"
+      ]
+    },
+    {
+      "id": "cabeca",
+      "nome": "Cabeça",
+      "cor": "#f59e0b",
+      "palavrasChave": [
+        "cabeça",
+        "cabeca",
+        "cabeça"
+      ]
+    },
+    {
+      "id": "olho",
+      "nome": "Olho",
+      "cor": "#90d105",
+      "palavrasChave": [
+        "olho",
+        "olho"
+      ]
+    }
+  ]
+}

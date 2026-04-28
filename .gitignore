@@ -1,0 +1,27 @@
+# Dependências
+node_modules/
+package-lock.json
+yarn.lock
+
+# Builds
+release/
+dist/
+installer/
+out/
+
+# Dados do WhatsApp
+.wwebjs_auth/
+zapmix-data/
+.wwebjs_cache/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
