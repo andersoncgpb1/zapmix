@@ -1,32 +1,15 @@
-# ZapMix WhatsApp Web - Aprovadas separadas da mensagem no ar
+CONFIGURAÇÃO NO VMIX
 
-Nesta versão, aprovar uma mensagem NÃO coloca no ar.
+GC PRINCIPAL:
+http://localhost:3000/vmix-gt.html
 
-## Rotas
+GC ENQUETE:
+http://localhost:3000/vmix.html
 
-Use esta rota no GT principal do vMix:
 
-```txt
-http://localhost:3000/datasource
-```
-
-Ela mostra apenas a mensagem definida pelo botão:
-
-```txt
-Colocar no GT
-```
-
-Lista completa de mensagens aprovadas:
-
-```txt
-http://localhost:3000/datasource/approved
-```
-
-Rota alternativa para mensagem atual:
-
-```txt
-http://localhost:3000/datasource/current
-```
+IMPORTANTE:
+Aprovar não coloca no ar.
+Só o botão "Colocar no GT" define o que aparece no ar.
 
 ## Como rodar
 
@@ -48,17 +31,3 @@ http://localhost:3000
 3. Ela vai para Aprovadas, mas NÃO aparece no GT principal.
 4. Clique em Colocar no GT para exibir.
 5. Para tirar, clique em Tirar do GT.
-
-## vMix
-
-Para o GC principal:
-
-```txt
-http://localhost:3000/datasource
-```
-
-Para uma lista/tabela de aprovadas:
-
-```txt
-http://localhost:3000/datasource/approved
-```"# zapmix" 
