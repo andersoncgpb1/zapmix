@@ -1,0 +1,10 @@
+node_modules/ 
+release/ 
+dist/ 
+installer/ 
+*.exe 
+*.zip 
+.wwebjs_auth/ 
+zapmix-data/ 
+licenca_ativa.json 
+licencas.json 

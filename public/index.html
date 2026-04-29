@@ -1,0 +1,1204 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>ZapMix — Gestão Inteligente para TV</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/png" href="/media/favicon.png">
+<link rel="shortcut icon" href="/media/favicon.png">
+<script src="/socket.io/socket.io.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #f1f5f9;
+  background-image: linear-gradient(145deg, #f8fafc 0%, #eef2f6 100%);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1e293b;
+  line-height: 1.5;
+  padding-bottom: 40px;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #90d105;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 32px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #d1d5db;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-img {
+  height: 40px;
+  width: auto;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.05));
+  transition: transform 0.2s ease;
+}
+.logo-img:hover {
+  transform: scale(1.02);
+}
+
+.app-title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #0f172a;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.app-sub {
+  font-size: 0.68rem;
+  color: #90d105;
+  letter-spacing: 0.3px;
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+.status {
+  background: #e2e8f0;
+  padding: 6px 20px;
+  border-radius: 60px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #334155;
+  transition: all 0.2s;
+}
+.status.conectado {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #90d105;
+  box-shadow: 0 0 6px rgba(144, 209, 5, 0.2);
+}
+.status.aguardando_qr {
+  background: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #eab308;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-header {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 8px 20px;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: 0.2s;
+  color: #1e293b;
+  font-family: 'Inter', sans-serif;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-header:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+  border-color: #90d105;
+}
+.btn-header.primary {
+  background: #90d105;
+  color: #0f2e00;
+  border-color: #7cb518;
+}
+.btn-header.primary:hover {
+  background: #a0e015;
+}
+.btn-header.vmix {
+  background: #1e293b;
+  color: white;
+  border-color: #334155;
+}
+.btn-header.vmix:hover {
+  background: #334155;
+  border-color: #90d105;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 380px 1fr 1fr;
+  gap: 24px;
+  padding: 32px 32px 20px 32px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.card-white {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 24px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e9eef3;
+  transition: all 0.2s;
+}
+.card-white:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 1.25rem;
+  border-left: 4px solid #90d105;
+  padding-left: 16px;
+  color: #0f172a;
+}
+.badge-count {
+  background: #f1f5f9;
+  color: #475569;
+  border-radius: 40px;
+  padding: 4px 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-left: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #cbd5e1, #cbd5e1, transparent);
+  margin: 24px 0;
+}
+
+label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #475569;
+  margin-top: 14px;
+  margin-bottom: 5px;
+  display: block;
+}
+
+input, textarea {
+  width: 100%;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 20px;
+  padding: 12px 16px;
+  color: #0f172a;
+  font-family: 'Inter', monospace;
+  font-size: 0.85rem;
+  transition: 0.2s;
+  outline: none;
+}
+input:focus, textarea:focus {
+  border-color: #90d105;
+  box-shadow: 0 0 0 3px rgba(144, 209, 5, 0.15);
+}
+
+input[type="file"] {
+  padding: 8px 12px;
+  background: #f8fafc;
+  font-family: 'Inter', sans-serif;
+}
+
+button {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 32px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: 0.2s;
+  color: #1e293b;
+  margin-right: 8px;
+  margin-top: 8px;
+  font-family: 'Inter', sans-serif;
+}
+button:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+  border-color: #90d105;
+}
+button:active {
+  transform: translateY(1px);
+}
+button.primary-green {
+  background: #90d105;
+  color: #0f2e00;
+  border-color: #7cb518;
+  font-weight: 700;
+}
+button.blue-accent {
+  background: #e2e8f0;
+  color: #1e40af;
+  border-color: #b9c8f0;
+}
+button.yellow-warning {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+}
+button.red-danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+button.full-width {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px;
+  font-size: 0.8rem;
+}
+
+.image-preview {
+  margin-top: 8px;
+  max-width: 100%;
+  max-height: 100px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  display: none;
+}
+
+.message-media {
+  margin-top: 12px;
+  max-width: 100%;
+  max-height: 150px;
+  border-radius: 12px;
+  object-fit: contain;
+}
+
+.message-item {
+  background: #fefefe;
+  border-radius: 24px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #eef2f6;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+.message-item:hover {
+  border-color: #cbd5e1;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.avatar-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.avatar-img {
+  width: 52px;
+  height: 52px;
+  border-radius: 32px;
+  object-fit: cover;
+  border: 2px solid #90d105;
+  background: #f8fafc;
+}
+.msg-name {
+  font-weight: 800;
+  font-size: 1rem;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+.msg-text {
+  font-size: 0.85rem;
+  color: #334155;
+  margin-top: 5px;
+  word-break: break-word;
+}
+.time-badge {
+  font-size: 0.6rem;
+  color: #64748b;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 12px;
+}
+.edit-panel {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.current-card {
+  background: linear-gradient(115deg, #fefce8, #f8fafc);
+  border-radius: 24px;
+  padding: 18px;
+  margin-bottom: 20px;
+  border: 1px solid #d9f0b0;
+  box-shadow: 0 2px 10px rgba(144, 209, 5, 0.08);
+}
+.current-flex {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.current-flex img.avatar-big {
+  width: 72px;
+  height: 72px;
+  border-radius: 60px;
+  border: 3px solid #90d105;
+  object-fit: cover;
+  background: #fff;
+}
+.current-info strong {
+  font-size: 1.2rem;
+  display: block;
+  color: #0f172a;
+}
+.current-media {
+  margin-top: 12px;
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 12px;
+}
+
+.footer-credits {
+  text-align: center;
+  margin-top: 20px;
+  padding: 14px 24px;
+  font-size: 0.7rem;
+  color: #64748b;
+  border-top: 1px solid #e2e8f0;
+  background: #ffffffaa;
+  backdrop-filter: blur(4px);
+  border-radius: 60px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.gt-approved-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.gt-block {
+  flex-shrink: 0;
+  margin-bottom: 20px;
+}
+
+.approved-block {
+  flex: 1;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.approved-scroll {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 38vh;
+  padding-right: 4px;
+}
+
+/* Estilos da enquete */
+.enquete-resultado {
+  background: #f8fafc;
+  border-radius: 20px;
+  padding: 16px;
+  margin-top: 20px;
+  border: 1px solid #e2e8f0;
+}
+.enquete-titulo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.enquete-titulo span {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.enquete-opcao {
+  margin-bottom: 12px;
+}
+.enquete-opcao-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  margin-bottom: 4px;
+}
+.enquete-barra {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.enquete-progresso {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+.enquete-total {
+  text-align: center;
+  font-size: 0.7rem;
+  color: #64748b;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Link card */
+.link-card {
+  background: #0f172a;
+  border-radius: 16px;
+  padding: 15px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+.link-card p {
+  color: #94a3b8;
+  font-size: 0.7rem;
+  margin-bottom: 8px;
+}
+.link-card code {
+  background: #1e293b;
+  color: #90d105;
+  padding: 8px 16px;
+  border-radius: 40px;
+  font-size: 0.8rem;
+  display: inline-block;
+  font-family: monospace;
+}
+.btn-copiar {
+  background: #90d105;
+  color: #0f2e00;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-size: 0.7rem;
+  margin-top: 8px;
+  cursor: pointer;
+}
+.btn-copiar:hover {
+  background: #a0e015;
+  transform: translateY(-1px);
+}
+
+/* Background settings */
+.bg-settings {
+  background: #f8fafc;
+  border-radius: 20px;
+  padding: 16px;
+  margin-top: 8px;
+}
+.bg-settings-title {
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+  color: #1e293b;
+}
+.bg-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.bg-option {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+  text-align: center;
+  flex: 1;
+  min-width: 70px;
+  transition: all 0.2s;
+}
+.bg-option:hover {
+  border-color: #90d105;
+  background: #fefce8;
+}
+.bg-option.selected {
+  border-color: #90d105;
+  background: #fefce8;
+}
+.bg-option .preview {
+  width: 40px;
+  height: 30px;
+  border-radius: 8px;
+  margin: 0 auto 8px;
+}
+.bg-option .name {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.bg-upload {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+}
+.bg-upload label {
+  font-size: 0.7rem;
+  margin-top: 0;
+  text-transform: none;
+  color: #475569;
+}
+.bg-upload input {
+  padding: 8px;
+  font-size: 0.75rem;
+}
+.bg-preview {
+  margin-top: 10px;
+  display: none;
+  max-width: 100%;
+  max-height: 80px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+@media (max-width: 1100px) {
+  main {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+  header {
+    padding: 12px 20px;
+  }
+  .logo-img {
+    height: 34px;
+  }
+  .app-title {
+    font-size: 1.35rem;
+  }
+  .header-buttons {
+    margin-top: 10px;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-area">
+    <img class="logo-img" src="/media/logotipo.png" alt="ZapMix" onerror="this.style.display='none';">
+    <div>
+      <div class="app-title">ZapMix</div>
+      <div class="app-sub">Gestão Inteligente para TV</div>
+    </div>
+  </div>
+  <div class="header-buttons">
+    <div id="status" class="status">iniciando</div>
+    <button class="btn-header vmix" onclick="window.open('/vmix-gt.html', '_blank')">
+      🎬 Abrir GT vMix
+    </button>
+    <button class="btn-header" onclick="window.location.href='/enquete.html'">
+      📊 Configurar Enquete
+    </button>
+  </div>
+</header>
+
+<main>
+  <!-- coluna 1: conexão + simulação -->
+  <div class="card-white">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+      <span style="font-size: 28px;">⚡</span>
+      <h2 style="font-size: 1.25rem; font-weight: 700; color:#2c3e2b;">WhatsApp</h2>
+    </div>
+    <p style="font-size: 0.78rem; color: #475569; margin-bottom: 16px;">Conecte com QR Code → mensagens chegam em tempo real para moderação.</p>
+    <img id="qr" alt="QR Code WhatsApp" style="width:100%; border-radius: 24px; background: #fff; padding: 8px; display: none; margin-top: 8px; border: 1px solid #cbd5e1;">
+
+    <!-- Botão Desconectar WhatsApp abaixo do QR Code -->
+    <button class="red-danger full-width" onclick="desconectarWhatsApp()" style="margin-top: 12px;">📱 Desconectar WhatsApp</button>
+
+    <!-- URL do vMix GT -->
+    <div class="link-card">
+      <p>🔗 URL para colocar no vMix (Web Browser) - GT</p>
+      <code id="vmix-gt-url">carregando...</code>
+      <div><button class="btn-copiar" onclick="copiarLink('vmix-gt-url')">📋 Copiar Link</button></div>
+    </div>
+
+    <!-- URL da Enquete vMix -->
+    <div class="link-card">
+      <p>🔗 URL para colocar no vMix (Web Browser) - Enquete</p>
+      <code id="vmix-url">carregando...</code>
+      <div><button class="btn-copiar" onclick="copiarLink('vmix-url')">📋 Copiar Link</button></div>
+    </div>
+
+    <hr>
+    
+    <!-- BACKGROUND SETTINGS -->
+    <h2 style="font-size: 0.95rem; font-weight: 600; color:#1e293b;">🎨 Background das Telas vMix</h2>
+    <div class="bg-settings">
+      <div class="bg-settings-title">Escolha o fundo das telas:</div>
+      <div class="bg-options" id="bg-options">
+        <div class="bg-option" data-bg="default">
+          <div class="preview" style="background: linear-gradient(135deg, #0f172a, #1e293b);"></div>
+          <div class="name">Padrão</div>
+        </div>
+        <div class="bg-option" data-bg="custom">
+          <div class="preview" style="background: url('/media/bg.jpg') center/cover;"></div>
+          <div class="name">Personalizado</div>
+        </div>
+        <div class="bg-option" data-bg="dark">
+          <div class="preview" style="background: #0a0a0a;"></div>
+          <div class="name">Preto</div>
+        </div>
+        <div class="bg-option" data-bg="light">
+          <div class="preview" style="background: #ffffff;"></div>
+          <div class="name">Branco</div>
+        </div>
+      </div>
+      
+      <div class="bg-upload">
+        <label>📸 Sua própria imagem de fundo:</label>
+        <input type="file" id="bg-upload-input" accept="image/*" onchange="uploadBackground()">
+        <img id="bg-preview" class="bg-preview">
+        <p style="font-size: 0.6rem; color: #64748b; margin-top: 5px;">Formatos: JPG, PNG. Tamanho recomendado: 1920x1080</p>
+      </div>
+      
+      <button class="primary-green full-width" onclick="aplicarBackground()" style="margin-top: 12px;">✅ Aplicar Background</button>
+    </div>
+
+    <hr>
+    <h2 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; color:#1e293b;">📝 Simular entrada</h2>
+    <label>Nome completo</label><input id="manualNome" placeholder="Ex: Rafaela Soares">
+    
+    <label>🖼️ Foto de perfil (opcional)</label>
+    <input type="file" id="manualFotoFile" accept="image/*" onchange="previewImage('manualFotoFile', 'manualFotoPreview')">
+    <img id="manualFotoPreview" class="image-preview">
+    
+    <label>💬 Mensagem</label><textarea id="manualMensagem" placeholder="Escreva o conteúdo..."></textarea>
+    <button class="primary-green full-width" onclick="addManual()">➕ Adicionar aos pendentes</button>
+    
+    <hr>
+    <h2 style="font-size: 0.95rem; font-weight: 600; color:#1e293b;">🛠️ Manutenção</h2>
+    <p style="font-size: 0.7rem; color:#64748b;">Apaga todas as mensagens e mídias (fotos, vídeos, áudios)</p>
+    <button class="red-danger full-width" onclick="clearAll()">🗑️ APAGAR TUDO</button>
+  </div>
+
+  <!-- coluna 2: pendentes -->
+  <div class="card-white">
+    <div class="section-header">
+      ⏳ Pendentes
+      <span id="pendingCount" class="badge-count">0</span>
+    </div>
+    <div id="pending" class="list" style="max-height: 70vh; overflow-y: auto; padding-right: 4px;"></div>
+  </div>
+
+  <!-- coluna 3: GT no ar + aprovadas + resultado enquete -->
+  <div class="card-white gt-approved-wrapper">
+    <div class="gt-block">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+        <span style="font-size: 1.4rem;">📢</span>
+        <h3 style="font-weight: 800; font-size: 1.2rem; color: #1e4620;">No ar (GT)</h3>
+        <span style="font-size: 0.65rem; background: #eef5e0; padding: 3px 10px; border-radius: 30px; color:#3f6e1f;">ao vivo</span>
+      </div>
+      <div id="current" class="current-card">Nenhuma mensagem em destaque.</div>
+      <button class="red-danger full-width" onclick="clearCurrent()" style="margin-top: 10px;">⛔ Remover do ar</button>
+    </div>
+
+    <div style="margin: 12px 0 8px; border-top: 1px solid #e2e8f0;"></div>
+
+    <div class="approved-block">
+      <div class="section-header" style="margin-top: 4px; margin-bottom: 16px;">
+        ✅ Aprovadas
+        <span id="approvedCount" class="badge-count">0</span>
+      </div>
+      <div id="approved" class="approved-scroll"></div>
+    </div>
+
+    <!-- RESULTADO DA ENQUETE -->
+    <div class="enquete-resultado">
+      <div class="enquete-titulo">
+        <span>📊 Resultado da Enquete</span>
+        <button class="primary-green" style="padding: 4px 12px; font-size: 0.65rem;" onclick="window.location.href='/enquete.html'">⚙️ Configurar</button>
+      </div>
+      <div id="enquete-resultado-content">
+        <div style="text-align:center; padding:20px;">Carregando...</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="footer-credits">
+  Desenvolvido por Anderson Souza — ZapMix © 2026
+</div>
+
+<script>
+// Verificar licença periodicamente (a cada 30 segundos)
+async function verificarLicencaPeriodica() {
+  try {
+    const res = await fetch("/api/licenca/status");
+    const data = await res.json();
+    
+    if (!data.ativada) {
+      alert("⚠️ Sua licença expirou ou foi desativada. O aplicativo será fechado.");
+      window.location.href = "/ativar.html";
+    }
+  } catch(e) {
+    console.log("Erro ao verificar licença");
+  }
+}
+
+// Iniciar verificação periódica
+setInterval(verificarLicencaPeriodica, 30000);
+
+const socket = io();
+
+socket.on("messages:update", render);
+
+async function api(path, options = {}) {
+  const res = await fetch(path, {
+    headers: { "Content-Type": "application/json" },
+    ...options
+  });
+  return res.json();
+}
+
+async function load() {
+  render(await api("/api/state"));
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str).replace(/[&<>]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    if (m === '"') return '&quot;';
+    if (m === "'") return '&#39;';
+    return m;
+  });
+}
+
+function getBaseUrl() {
+  return window.location.origin;
+}
+
+function copiarLink(elementId) {
+  const elemento = document.getElementById(elementId);
+  const url = elemento.innerText;
+  navigator.clipboard.writeText(url).then(() => {
+    alert("✅ Link copiado: " + url);
+  });
+}
+
+let imagemCustomUrl = null;
+
+function previewImage(fileInputId, previewId) {
+  const fileInput = document.getElementById(fileInputId);
+  const preview = document.getElementById(previewId);
+  
+  if (fileInput.files && fileInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      preview.src = e.target.result;
+      preview.style.display = "block";
+    };
+    reader.readAsDataURL(fileInput.files[0]);
+  } else {
+    preview.style.display = "none";
+    preview.src = "";
+  }
+}
+
+function uploadBackground() {
+  const fileInput = document.getElementById("bg-upload-input");
+  const preview = document.getElementById("bg-preview");
+  
+  if (fileInput.files && fileInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      preview.src = e.target.result;
+      preview.style.display = "block";
+      
+      // Enviar imagem para o servidor
+      const formData = new FormData();
+      formData.append("background", fileInput.files[0]);
+      
+      try {
+        const res = await fetch("/api/background/upload", {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        if (data.url) {
+          imagemCustomUrl = data.url;
+          alert("✅ Imagem de fundo enviada com sucesso!");
+        }
+      } catch (error) {
+        console.error("Erro ao enviar imagem:", error);
+        alert("Erro ao enviar imagem. Tente novamente.");
+      }
+    };
+    reader.readAsDataURL(fileInput.files[0]);
+  }
+}
+
+async function aplicarBackground() {
+  const selected = document.querySelector('.bg-option.selected');
+  if (!selected) return;
+  
+  const bgType = selected.getAttribute('data-bg');
+  let bgStyle = '';
+  let bgImageUrl = null;
+  
+  switch(bgType) {
+    case 'custom':
+      if (imagemCustomUrl) {
+        bgImageUrl = imagemCustomUrl;
+        bgStyle = `url('${imagemCustomUrl}') center/cover`;
+      } else {
+        bgStyle = "url('/media/bg.jpg') center/cover";
+        bgImageUrl = '/media/bg.jpg';
+      }
+      break;
+    case 'dark':
+      bgStyle = "#0a0a0a";
+      break;
+    case 'light':
+      bgStyle = "#ffffff";
+      break;
+    default:
+      bgStyle = "linear-gradient(135deg, #0f172a, #1e293b)";
+  }
+  
+  // Salvar no localStorage
+  localStorage.setItem('zapmix_background', bgType);
+  if (bgImageUrl) localStorage.setItem('zapmix_background_image', bgImageUrl);
+  
+  // Aplicar nas páginas do vMix via API
+  await api("/api/background/set", {
+    method: "POST",
+    body: JSON.stringify({ background: bgType, imageUrl: bgImageUrl })
+  });
+  
+  alert(`✅ Background alterado para ${selected.querySelector('.name').innerText}`);
+}
+
+// Carregar background salvo
+function carregarBackgroundSalvo() {
+  const savedBg = localStorage.getItem('zapmix_background');
+  if (savedBg) {
+    const option = document.querySelector(`.bg-option[data-bg="${savedBg}"]`);
+    if (option) {
+      document.querySelectorAll('.bg-option').forEach(opt => opt.classList.remove('selected'));
+      option.classList.add('selected');
+    }
+  } else {
+    document.querySelector('.bg-option[data-bg="default"]').classList.add('selected');
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function render(data) {
+  const statusDiv = document.getElementById("status");
+  const wsStatus = data.whatsappStatus || "desconectado";
+  let statusText = "DESCONECTADO";
+  let statusClass = "";
+  if (wsStatus === "conectado") {
+    statusText = "CONECTADO";
+    statusClass = "conectado";
+  } else if (wsStatus === "aguardando_qr") {
+    statusText = "AGUARDANDO QR";
+    statusClass = "aguardando_qr";
+  } else {
+    statusText = "INICIANDO";
+  }
+  statusDiv.innerText = statusText;
+  statusDiv.className = "status " + statusClass;
+
+  const qrImg = document.getElementById("qr");
+  if (data.qrCodeDataUrl) {
+    qrImg.src = data.qrCodeDataUrl;
+    qrImg.style.display = "block";
+  } else {
+    qrImg.style.display = "none";
+  }
+
+  const currentMsg = data.currentMessage || {};
+  const currentContainer = document.getElementById("current");
+  if (!currentMsg || (!currentMsg.nome && !currentMsg.mensagem)) {
+    currentContainer.innerHTML = `<div style="display:flex; align-items:center; gap:8px; justify-content:center; padding:12px; color:#64748b;"><span>📭 Nenhuma mensagem no ar</span></div>`;
+  } else {
+    let currentMediaHtml = "";
+    if (currentMsg.videoUrl) {
+      currentMediaHtml = `<video class="current-media" controls src="${escapeHtml(currentMsg.videoUrl)}"></video>`;
+    } else if (currentMsg.audioUrl) {
+      currentMediaHtml = `<audio class="current-media" controls src="${escapeHtml(currentMsg.audioUrl)}"></audio>`;
+    } else if (currentMsg.imagemUrl) {
+      currentMediaHtml = `<img class="current-media" src="${escapeHtml(currentMsg.imagemUrl)}">`;
+    }
+    
+    currentContainer.innerHTML = `
+      <div class="current-flex">
+        <img class="avatar-big" src="${escapeHtml(currentMsg.foto || '/fotos/default.png')}" onerror="this.src='/fotos/default.png'">
+        <div class="current-info">
+          <strong>${escapeHtml(currentMsg.nome)}</strong>
+          <div style="margin-top: 8px; font-size:0.85rem; color:#2d3e2b;">💬 ${escapeHtml(currentMsg.mensagem || "")}</div>
+        </div>
+      </div>
+      ${currentMediaHtml}
+    `;
+  }
+
+  document.getElementById("pendingCount").innerText = (data.pendingMessages || []).length;
+  document.getElementById("approvedCount").innerText = (data.approvedMessages || []).length;
+
+  renderMessageList("pending", data.pendingMessages || [], true);
+  renderMessageList("approved", data.approvedMessages || [], false);
+}
+
+function renderMessageList(containerId, messages, isPending) {
+  const container = document.getElementById(containerId);
+  if (!messages.length) {
+    container.innerHTML = `<div class="message-item" style="text-align:center; opacity:0.7;">📭 Nenhuma mensagem ${isPending ? "pendente" : "aprovada"}</div>`;
+    return;
+  }
+
+  container.innerHTML = messages.map(msg => {
+    let mediaHtml = "";
+    if (msg.videoUrl) {
+      mediaHtml = `<video class="message-media" controls src="${escapeHtml(msg.videoUrl)}"></video>`;
+    } else if (msg.audioUrl) {
+      mediaHtml = `<audio class="message-media" controls src="${escapeHtml(msg.audioUrl)}"></audio>`;
+    } else if (msg.imagemUrl) {
+      mediaHtml = `<img class="message-media" src="${escapeHtml(msg.imagemUrl)}">`;
+    }
+    
+    return `
+      <div class="message-item" id="msg-${msg.id}">
+        <div class="time-badge">
+          <span>🕒 ${escapeHtml(msg.horario || "agora")}</span>
+          <span>📡 ${escapeHtml(msg.origem || "whatsapp")}</span>
+        </div>
+        <div class="avatar-row">
+          <img class="avatar-img" src="${escapeHtml(msg.foto || '/fotos/default.png')}" onerror="this.src='/fotos/default.png'">
+          <div style="flex:1">
+            <div class="msg-name">${escapeHtml(msg.nome)}</div>
+            <div class="msg-text">${escapeHtml(msg.mensagem)}</div>
+            ${mediaHtml}
+          </div>
+        </div>
+        <div style="margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px;">
+          ${isPending ? `<button class="yellow-warning" onclick="approveMessage('${msg.id}')">✅ Aprovar</button>` : ""}
+          <button class="blue-accent" onclick="onAirMessage('${msg.id}')">🎙️ Colocar no GT</button>
+          ${isPending ? `<button class="red-danger" onclick="rejectMessage('${msg.id}')">❌ Rejeitar</button>` : ""}
+          <button style="background:#f1f5f9;" onclick="toggleEditMessage('${msg.id}')">✏️ Editar</button>
+        </div>
+        <div class="edit-panel" id="edit-panel-${msg.id}">
+          <label>📛 Nome</label><input id="edit-nome-${msg.id}" value="${escapeHtml(msg.nome)}">
+          <label>💬 Mensagem</label><textarea id="edit-mensagem-${msg.id}" rows="2">${escapeHtml(msg.mensagem)}</textarea>
+          <label>🖼️ URL da foto de perfil</label><input id="edit-foto-${msg.id}" value="${escapeHtml(msg.foto || "")}">
+          <label>📷 URL da imagem</label><input id="edit-imagem-${msg.id}" value="${escapeHtml(msg.imagemUrl || "")}">
+          <label>🎥 URL do vídeo</label><input id="edit-video-${msg.id}" value="${escapeHtml(msg.videoUrl || "")}">
+          <label>🎵 URL do áudio</label><input id="edit-audio-${msg.id}" value="${escapeHtml(msg.audioUrl || "")}">
+          <button class="primary-green" onclick="saveEditMessage('${msg.id}')">💾 Salvar edição</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function toggleEditMessage(id) {
+  const panel = document.getElementById(`edit-panel-${id}`);
+  if (!panel) return;
+  const isVisible = panel.style.display === "flex";
+  panel.style.display = isVisible ? "none" : "flex";
+}
+
+async function saveEditMessage(id) {
+  const nome = document.getElementById(`edit-nome-${id}`).value;
+  const mensagem = document.getElementById(`edit-mensagem-${id}`).value;
+  const foto = document.getElementById(`edit-foto-${id}`).value;
+  const imagemUrl = document.getElementById(`edit-imagem-${id}`).value;
+  const videoUrl = document.getElementById(`edit-video-${id}`).value;
+  const audioUrl = document.getElementById(`edit-audio-${id}`).value;
+  await api(`/api/messages/${id}/update`, {
+    method: "POST",
+    body: JSON.stringify({ nome, mensagem, foto, imagemUrl, videoUrl, audioUrl })
+  });
+  load();
+}
+
+async function approveMessage(id) {
+  await api(`/api/messages/${id}/approve`, { method: "POST" });
+  load();
+}
+async function rejectMessage(id) {
+  await api(`/api/messages/${id}/reject`, { method: "POST" });
+  load();
+}
+async function onAirMessage(id) {
+  await api(`/api/messages/${id}/onair`, { method: "POST" });
+  load();
+}
+async function clearCurrent() {
+  await api("/api/clear", { method: "POST" });
+  load();
+}
+
+// ============ LIMPAR TODAS AS MENSAGENS E MÍDIAS ============
+async function clearAll() {
+  const confirmReset = confirm("⚠️ LIMPEZA TOTAL: Todas as mensagens pendentes, aprovadas, a mensagem em destaque e TODAS as mídias (fotos, vídeos, áudios) serão apagadas.\n\nEssa ação não pode ser desfeita. Continuar?");
+  if (!confirmReset) return;
+  
+  try {
+    const res = await api("/api/maintenance/clear-all", { method: "POST" });
+    alert(`🧹 Limpeza concluída!\n• Mensagens pendentes removidas: ${res.pendingDeleted}\n• Mensagens aprovadas removidas: ${res.approvedDeleted}\n• Mídias deletadas: ${res.photosDeleted}`);
+    load();
+  } catch (error) {
+    alert("Erro ao limpar mensagens. Tente novamente.");
+    console.error(error);
+  }
+}
+
+// ============ DESCONECTAR WHATSAPP ============
+async function desconectarWhatsApp() {
+  if (confirm("⚠️ Tem certeza que deseja desconectar o WhatsApp?\n\nVocê precisará escanear o QR Code novamente para reconectar.")) {
+    try {
+      await api("/api/whatsapp/logout", { method: "POST" });
+      alert("✅ WhatsApp desconectado! Escaneie o QR Code novamente para reconectar.");
+      load();
+    } catch (error) {
+      alert("Erro ao desconectar. Tente novamente.");
+    }
+  }
+}
+
+async function addManual() {
+  const nome = document.getElementById("manualNome").value.trim();
+  const mensagem = document.getElementById("manualMensagem").value.trim();
+  let foto = "";
+  
+  const fotoFile = document.getElementById("manualFotoFile").files[0];
+  
+  if (!nome || !mensagem) {
+    alert("Preencha nome e mensagem para simular uma entrada.");
+    return;
+  }
+  
+  if (fotoFile) {
+    const base64 = await fileToBase64(fotoFile);
+    foto = base64;
+  }
+  
+  await api("/api/manual", {
+    method: "POST",
+    body: JSON.stringify({ nome, mensagem, foto: foto || null })
+  });
+  
+  document.getElementById("manualMensagem").value = "";
+  document.getElementById("manualNome").value = "";
+  document.getElementById("manualFotoFile").value = "";
+  document.getElementById("manualFotoPreview").style.display = "none";
+  load();
+}
+
+// ============ FUNÇÕES DA ENQUETE ============
+async function carregarEnquete() {
+  try {
+    const res = await fetch("/api/enquete");
+    const data = await res.json();
+    const container = document.getElementById("enquete-resultado-content");
+    
+    if (!container) return;
+    
+    if (data.totalVotos === 0) {
+      container.innerHTML = '<div style="text-align:center; padding:20px; color:#64748b;">📊 Nenhum voto ainda</div>';
+      return;
+    }
+    
+    container.innerHTML = data.opcoes.map(op => `
+      <div class="enquete-opcao">
+        <div class="enquete-opcao-header">
+          <span>${escapeHtml(op.nome)}</span>
+          <span>${op.porcentagem}%</span>
+        </div>
+        <div class="enquete-barra">
+          <div class="enquete-progresso" style="width: ${op.porcentagem}%; background: ${op.cor};"></div>
+        </div>
+      </div>
+    `).join("");
+    
+    const totalDiv = document.createElement("div");
+    totalDiv.className = "enquete-total";
+    totalDiv.innerHTML = `📊 Total de votos: ${data.totalVotos}`;
+    container.appendChild(totalDiv);
+    
+  } catch(e) { 
+    console.log("Erro ao carregar enquete:", e); 
+  }
+}
+
+// Atualizar URLs
+document.getElementById("vmix-gt-url").innerText = getBaseUrl() + "/vmix-gt.html";
+document.getElementById("vmix-url").innerText = getBaseUrl() + "/vmix.html";
+
+// Inicializar seleção de background
+document.querySelectorAll('.bg-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.bg-option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+  });
+});
+
+carregarBackgroundSalvo();
+load();
+setInterval(carregarEnquete, 3000);
+carregarEnquete();
+</script>
+</body>
+</html>

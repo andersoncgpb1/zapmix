@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>ZapMix — Enquete</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/png" href="/media/favicon.png">
+<link rel="shortcut icon" href="/media/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  width: 100%;
+  height: 100vh;
+  /* Background será definido dinamicamente pelo JavaScript */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  transition: background 0.3s ease;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 0;
+}
+
+.enquete-container {
+  position: relative;
+  z-index: 1;
+  width: 1400px;
+  height: 800px;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 48px;
+  padding: 50px;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.5s ease;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.enquete-container::-webkit-scrollbar {
+  width: 8px;
+}
+.enquete-container::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 10px;
+  margin: 10px;
+}
+.enquete-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #90d105, #6a9e05);
+  border-radius: 10px;
+}
+.enquete-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #a0e015, #7cb518);
+}
+
+.enquete-titulo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.enquete-titulo h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #1e293b, #334155);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.enquete-pergunta {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 18px 25px;
+  background: linear-gradient(135deg, #f8fafc, #ffffff);
+  border-radius: 60px;
+  border: 2px solid #90d105;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1e293b;
+  word-wrap: break-word;
+}
+
+.opcao {
+  margin-bottom: 25px;
+}
+
+.opcao-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #1e293b;
+}
+
+.barra {
+  background: #e2e8f0;
+  border-radius: 60px;
+  height: 45px;
+  overflow: hidden;
+}
+
+.progresso {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 20px;
+  color: white;
+  font-weight: 800;
+  font-size: 1rem;
+  transition: width 0.5s ease;
+  border-radius: 60px;
+}
+
+.instrucoes {
+  text-align: center;
+  margin-top: 30px;
+  padding: 15px;
+  background: #f1f5f9;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.instrucoes strong {
+  background: #1e293b;
+  color: #90d105;
+  padding: 5px 12px;
+  border-radius: 40px;
+  margin: 3px;
+  display: inline-block;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.empty-state .emoji {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 800px) {
+  .enquete-container {
+    width: 90%;
+    height: 90%;
+    padding: 25px;
+  }
+  .enquete-titulo h1 {
+    font-size: 1.8rem;
+  }
+  .enquete-pergunta {
+    font-size: 1rem;
+    padding: 12px 18px;
+  }
+  .opcao-header {
+    font-size: 1rem;
+  }
+  .barra {
+    height: 35px;
+  }
+  .progresso {
+    font-size: 0.8rem;
+  }
+}
+</style>
+</head>
+<body>
+<div class="enquete-container">
+  <div class="enquete-titulo">
+    <h1>ENQUETE</h1>
+  </div>
+  
+  <div id="pergunta-container" class="enquete-pergunta">
+    Carregando pergunta...
+  </div>
+  
+  <div id="opcoes"></div>
+  
+  <div class="instrucoes" id="instrucoes">
+    💡 Envie sua opção pelo WhatsApp
+  </div>
+</div>
+
+<script>
+async function carregarBackground() {
+  try {
+    const res = await fetch("/api/background/get");
+    const bg = await res.json();
+    
+    const body = document.body;
+    
+    if (bg.type === "default") {
+      body.style.background = "linear-gradient(135deg, #0f172a, #1e293b)";
+      body.style.backgroundImage = "none";
+    } else if (bg.type === "custom" && bg.imageUrl) {
+      body.style.backgroundImage = `url('${bg.imageUrl}')`;
+      body.style.backgroundSize = "cover";
+      body.style.backgroundPosition = "center";
+    } else if (bg.type === "dark") {
+      body.style.background = "#0a0a0a";
+      body.style.backgroundImage = "none";
+    } else if (bg.type === "light") {
+      body.style.background = "#ffffff";
+      body.style.backgroundImage = "none";
+    }
+  } catch (error) {
+    console.error("Erro ao carregar background:", error);
+  }
+}
+
+async function carregarEnquete() {
+  try {
+    const res = await fetch("/api/enquete");
+    const data = await res.json();
+    renderizarEnquete(data);
+  } catch (error) {
+    console.error("Erro ao carregar enquete:", error);
+  }
+}
+
+function renderizarEnquete(data) {
+  const totalVotos = data.totalVotos || 0;
+  const vencedor = data.vencedor;
+  
+  // Carregar pergunta
+  if (data.pergunta) {
+    document.getElementById("pergunta-container").innerHTML = escapeHtml(data.pergunta);
+  }
+  
+  // Atualizar instruções com as opções
+  if (data.opcoes && data.opcoes.length > 0) {
+    const opcoesNomes = data.opcoes.map(op => op.nome).join(' | ');
+    document.getElementById("instrucoes").innerHTML = `💡 Envie sua opção pelo WhatsApp:<br> ${opcoesNomes}`;
+  }
+  
+  // Opções
+  const container = document.getElementById("opcoes");
+  if (!data.opcoes || data.opcoes.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="emoji">📊</div><h3>Nenhuma opção configurada</h3></div>';
+    return;
+  }
+  
+  container.innerHTML = data.opcoes.map(op => {
+    const porcentagem = op.porcentagem || 0;
+    const cor = op.cor || "#90d105";
+    return `
+      <div class="opcao">
+        <div class="opcao-header">
+          <span>${escapeHtml(op.nome)}</span>
+          <span>${porcentagem}%</span>
+        </div>
+        <div class="barra">
+          <div class="progresso" style="width: ${porcentagem}%; background: ${cor};">
+            ${porcentagem > 18 ? `${porcentagem}%` : ""}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
+}
+
+// Carregar background e enquete
+carregarBackground();
+carregarEnquete();
+setInterval(() => {
+  carregarEnquete();
+  carregarBackground();
+}, 3000);
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+CONFIGURAÇÃO NO VMIX
+
+GC PRINCIPAL:
+http://localhost:3000/vmix-gt.html
+
+GC ENQUETE:
+http://localhost:3000/vmix.html
+
+
+IMPORTANTE:
+Aprovar não coloca no ar.
+Só o botão "Colocar no GT" define o que aparece no ar.

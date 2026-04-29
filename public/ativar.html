@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Ativação - ZapMix</title>
+<link rel="icon" type="image/png" href="/media/favicon.png">
+<link rel="shortcut icon" href="/media/favicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.ativar-container {
+  max-width: 550px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 48px;
+  padding: 50px 40px;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.logo {
+  width: 100px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 2rem;
+  color: #0f172a;
+  margin-bottom: 15px;
+}
+
+.subtitle {
+  color: #64748b;
+  margin-bottom: 30px;
+  font-size: 1rem;
+}
+
+.btn-site {
+  width: 100%;
+  background: #90d105;
+  color: #0f2e00;
+  border: none;
+  padding: 16px;
+  border-radius: 60px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.btn-site:hover {
+  background: #a0e015;
+  transform: translateY(-2px);
+}
+
+.btn-copiar {
+  width: 100%;
+  background: #1e293b;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 60px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 15px;
+}
+
+.btn-copiar:hover {
+  background: #334155;
+  transform: translateY(-2px);
+}
+
+.chave-input {
+  width: 100%;
+  padding: 14px;
+  font-size: 0.9rem;
+  text-align: center;
+  letter-spacing: 2px;
+  font-family: monospace;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 60px;
+  outline: none;
+  margin: 20px 0;
+}
+
+.chave-input:focus {
+  border-color: #90d105;
+}
+
+.btn-ativar {
+  width: 100%;
+  background: #90d105;
+  color: #0f2e00;
+  border: none;
+  padding: 14px;
+  border-radius: 60px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-ativar:hover {
+  background: #a0e015;
+  transform: translateY(-2px);
+}
+
+.btn-ativar:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.mensagem {
+  margin-top: 20px;
+  padding: 12px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  display: none;
+}
+
+.mensagem.erro {
+  background: #fee2e2;
+  color: #991b1b;
+  display: block;
+}
+
+.mensagem.sucesso {
+  background: #dcfce7;
+  color: #15803d;
+  display: block;
+}
+
+.mensagem.carregando {
+  background: #f1f5f9;
+  color: #1e293b;
+  display: block;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 25px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.divider span {
+  padding: 0 10px;
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.info {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+.loader {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid white;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.url-site {
+  background: #f1f5f9;
+  padding: 12px;
+  border-radius: 12px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  margin: 15px 0;
+  word-break: break-all;
+  color: #0f172a;
+}
+</style>
+</head>
+<body>
+<div class="ativar-container">
+  <img class="logo" src="/media/logotipo.png" alt="ZapMix" onerror="this.style.display='none'">
+  <h1>🔑 Ativação</h1>
+  <p class="subtitle">Para usar o ZapMix, você precisa de uma licença válida</p>
+  
+  <!-- Botão para ir ao site -->
+  <a href="https://zapmix-site.vercel.app/gerar-licenca.html" target="_blank" class="btn-site">
+    <i class="fas fa-shopping-cart"></i> Obter Licença no Site
+  </a>
+  
+  <div class="divider">
+    <span>ou</span>
+  </div>
+  
+  <!-- Se já tiver a chave, pode colar aqui -->
+  <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 10px;">Já tem sua chave? Cole abaixo:</p>
+  <input type="text" id="chave" class="chave-input" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19" autocomplete="off">
+  
+  <button id="btn-ativar" class="btn-ativar" onclick="ativarLicenca()">✅ Ativar Licença</button>
+  
+  <div id="mensagem" class="mensagem"></div>
+  
+  <div class="info">
+    <i class="fas fa-question-circle"></i> Não tem licença? Clique no botão acima para adquirir no site oficial.
+  </div>
+</div>
+
+<script>
+const chaveInput = document.getElementById('chave');
+chaveInput.addEventListener('input', function(e) {
+  let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (value.length > 4 && value.length <= 8) {
+    value = value.substring(0, 4) + '-' + value.substring(4);
+  } else if (value.length > 8 && value.length <= 12) {
+    value = value.substring(0, 4) + '-' + value.substring(4, 8) + '-' + value.substring(8);
+  } else if (value.length > 12) {
+    value = value.substring(0, 4) + '-' + value.substring(4, 8) + '-' + value.substring(8, 12) + '-' + value.substring(12, 16);
+  }
+  e.target.value = value;
+});
+
+function mostrarMensagem(texto, tipo) {
+  const msgDiv = document.getElementById('mensagem');
+  msgDiv.innerHTML = texto;
+  msgDiv.className = `mensagem ${tipo}`;
+  setTimeout(() => {
+    if (tipo !== 'carregando') {
+      setTimeout(() => {
+        msgDiv.className = 'mensagem';
+      }, 5000);
+    }
+  }, 100);
+}
+
+function obterComputadorId() {
+  let id = localStorage.getItem('zapmix_computador_id');
+  if (!id) {
+    id = 'PC-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+    localStorage.setItem('zapmix_computador_id', id);
+  }
+  return id;
+}
+
+async function ativarLicenca() {
+  const chave = document.getElementById('chave').value.trim().toUpperCase();
+  const btn = document.getElementById('btn-ativar');
+  
+  if (!chave) {
+    mostrarMensagem('⚠️ Digite sua chave de licença', 'erro');
+    return;
+  }
+  
+  const formatoRegex = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
+  if (!formatoRegex.test(chave)) {
+    mostrarMensagem('⚠️ Formato de chave inválido. Use: XXXX-XXXX-XXXX-XXXX', 'erro');
+    return;
+  }
+  
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loader"></span> Verificando...';
+  mostrarMensagem('Verificando licença...', 'carregando');
+  
+  try {
+    const computadorId = obterComputadorId();
+    
+    const response = await fetch('/api/licenca/validar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chave, computadorId })
+    });
+    
+    const data = await response.json();
+    
+    if (data.valida) {
+      await fetch('/api/licenca/salvar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chave, titular: data.titular })
+      });
+      
+      mostrarMensagem(`✅ Licença ativada com sucesso! ${data.titular ? `Bem-vindo, ${data.titular}!` : ''}`, 'sucesso');
+      
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1500);
+    } else {
+      mostrarMensagem(`❌ ${data.error || 'Chave inválida! Verifique e tente novamente.'}`, 'erro');
+      btn.disabled = false;
+      btn.innerHTML = '✅ Ativar Licença';
+    }
+  } catch (error) {
+    console.error('Erro:', error);
+    mostrarMensagem('❌ Erro ao conectar com o servidor. Tente novamente.', 'erro');
+    btn.disabled = false;
+    btn.innerHTML = '✅ Ativar Licença';
+  }
+}
+
+chaveInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    ativarLicenca();
+  }
+});
+</script>
+</body>
+</html>
