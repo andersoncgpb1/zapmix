@@ -6,92 +6,68 @@ const http = require('http');
 
 let mainWindow;
 let serverProcess;
-let licencaAtiva = false;
+let portaAtual = 3000;
+let tentativas = 0;
 
-// Função para verificar se a licença está ativa
-function verificarLicencaViaAPI() {
+function lerPortaArquivo() {
+  const userDataPath = process.env.APPDATA || path.join(require('os').homedir(), 'AppData', 'Roaming');
+  const portaFile = path.join(userDataPath, 'ZapMix', 'porta.txt');
+  if (fs.existsSync(portaFile)) {
+    try {
+      const porta = parseInt(fs.readFileSync(portaFile, 'utf8').trim(), 10);
+      if (!isNaN(porta)) return porta;
+    } catch(e) {}
+  }
+  return 3000;
+}
+
+function verificarServidor() {
   return new Promise((resolve) => {
-    const req = http.get('http://localhost:3000/api/licenca/status', (res) => {
+    const req = http.get(`http://localhost:${portaAtual}/api/state`, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
         try {
-          const result = JSON.parse(data);
-          resolve(result.ativada === true);
+          JSON.parse(data);
+          resolve(true);
         } catch(e) {
           resolve(false);
         }
       });
     });
     req.on('error', () => resolve(false));
-    req.setTimeout(3000, () => resolve(false));
+    req.setTimeout(2000, () => { req.destroy(); resolve(false); });
   });
 }
 
-function startServer() {
+function iniciarServidor() {
   console.log('🚀 Iniciando servidor ZapMix...');
-  
-  // Matar processos na porta 3000
-  try {
-    const { exec } = require('child_process');
-    exec('netstat -ano | findstr :3000', (error, stdout) => {
-      if (stdout) {
-        const lines = stdout.split('\n');
-        lines.forEach(line => {
-          const parts = line.trim().split(/\s+/);
-          const pid = parts[parts.length - 1];
-          if (pid && !isNaN(pid) && pid !== '0') {
-            exec(`taskkill /F /PID ${pid}`);
-          }
-        });
-      }
-    });
-  } catch(e) {}
-  
-  setTimeout(() => {
-    serverProcess = spawn(process.execPath, ['server.js'], {
-      cwd: __dirname,
-      stdio: 'pipe',
-      windowsHide: true,
-      env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' }
-    });
-    
-    serverProcess.stdout.on('data', (data) => {
-      const output = data.toString();
-      console.log(`[Server]: ${output}`);
-      
-      if (output.includes('Servidor rodando em')) {
-        console.log('✅ Servidor pronto!');
-        verificarEAbrirJanela();
-      }
-    });
-    
-    serverProcess.stderr.on('data', (data) => {
-      console.error(`[Server Error]: ${data}`);
-    });
-    
-    serverProcess.on('close', (code) => {
-      console.log(`Servidor finalizado com código ${code}`);
-      serverProcess = null;
-    });
-  }, 1000);
-}
+  serverProcess = spawn(process.execPath, ['server.js'], {
+    cwd: __dirname,
+    stdio: 'pipe',
+    windowsHide: true,
+    env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' }
+  });
 
-async function verificarEAbrirJanela() {
-  // Aguardar um pouco para o servidor estar totalmente pronto
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  const ativada = await verificarLicencaViaAPI();
-  
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    if (ativada) {
-      console.log('✅ Licença ativa, carregando painel principal');
-      mainWindow.loadURL('http://localhost:3000');
-    } else {
-      console.log('🔑 Licença não ativada, carregando tela de ativação');
-      mainWindow.loadURL('http://localhost:3000/ativar.html');
+  serverProcess.stdout.on('data', (data) => {
+    const output = data.toString();
+    console.log(`[Server]: ${output}`);
+    const portaMatch = output.match(/http:\/\/localhost:(\d+)/);
+    if (portaMatch && portaMatch[1]) {
+      portaAtual = parseInt(portaMatch[1], 10);
     }
-  }
+    if (output.includes('QR Code gerado') || output.includes('WhatsApp conectado')) {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.loadURL(`http://localhost:${portaAtual}`);
+      }
+    }
+  });
+
+  serverProcess.stderr.on('data', (data) => console.error(`[Server Error]: ${data}`));
+  serverProcess.on('close', (code) => {
+    console.log(`Servidor finalizado com código ${code}`);
+    serverProcess = null;
+  });
 }
 
 function createWindow() {
@@ -107,34 +83,53 @@ function createWindow() {
     show: false,
     backgroundColor: '#0f172a'
   });
-  
-  mainWindow.loadFile('loading.html');
-  
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
-  });
-  
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
+
+  // Carrega loading.html com caminho absoluto
+  mainWindow.loadFile(path.join(__dirname, 'loading.html'));
+
+  mainWindow.once('ready-to-show', () => mainWindow.show());
+
+  const interval = setInterval(async () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      const url = mainWindow.webContents.getURL();
+      if (url.includes('loading.html')) {
+        portaAtual = lerPortaArquivo();
+        const servidorOk = await verificarServidor();
+        if (servidorOk) {
+          mainWindow.loadURL(`http://localhost:${portaAtual}`);
+          clearInterval(interval);
+        } else if (tentativas > 10) {
+          tentativas = 0;
+          if (serverProcess) {
+            serverProcess.kill();
+            setTimeout(() => iniciarServidor(), 1000);
+          }
+        }
+        tentativas++;
+      } else {
+        clearInterval(interval);
+      }
+    } else {
+      clearInterval(interval);
+    }
+  }, 3000);
+
+  mainWindow.on('closed', () => { mainWindow = null; });
 }
 
 app.whenReady().then(() => {
   createWindow();
-  startServer();
+  iniciarServidor();
 });
 
 app.on('window-all-closed', () => {
-  if (serverProcess) {
-    serverProcess.kill();
-  }
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  if (serverProcess) serverProcess.kill();
+  if (process.platform !== 'darwin') app.quit();
 });
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
+    iniciarServidor();
   }
 });

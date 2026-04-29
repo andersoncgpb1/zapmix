@@ -651,7 +651,7 @@ button.full-width {
     <p style="font-size: 0.78rem; color: #475569; margin-bottom: 16px;">Conecte com QR Code → mensagens chegam em tempo real para moderação.</p>
     <img id="qr" alt="QR Code WhatsApp" style="width:100%; border-radius: 24px; background: #fff; padding: 8px; display: none; margin-top: 8px; border: 1px solid #cbd5e1;">
 
-    <!-- Botão Desconectar WhatsApp abaixo do QR Code -->
+    <!-- Botão Desconectar WhatsApp -->
     <button class="red-danger full-width" onclick="desconectarWhatsApp()" style="margin-top: 12px;">📱 Desconectar WhatsApp</button>
 
     <!-- URL do vMix GT -->
@@ -717,6 +717,7 @@ button.full-width {
     <hr>
     <h2 style="font-size: 0.95rem; font-weight: 600; color:#1e293b;">🛠️ Manutenção</h2>
     <p style="font-size: 0.7rem; color:#64748b;">Apaga todas as mensagens e mídias (fotos, vídeos, áudios)</p>
+    <!-- Botão APAGAR TUDO chama a função clearAll() -->
     <button class="red-danger full-width" onclick="clearAll()">🗑️ APAGAR TUDO</button>
   </div>
 
@@ -769,23 +770,56 @@ button.full-width {
 </div>
 
 <script>
-// Verificar licença periodicamente (a cada 30 segundos)
-async function verificarLicencaPeriodica() {
+
+// ============================================================
+// FUNÇÕES CORRETAS PARA LIMPAR MENSAGENS E DESCONECTAR WHATSAPP
+// ============================================================
+
+// Botão APAGAR TUDO (clearAll)
+async function clearAll() {
+  if (!confirm("⚠️ LIMPEZA TOTAL: Todas as mensagens pendentes, aprovadas, a mensagem em destaque e TODAS as mídias (fotos, vídeos, áudios) serão apagadas.\n\nEssa ação não pode ser desfeita. Continuar?")) {
+    return;
+  }
+  
   try {
-    const res = await fetch("/api/licenca/status");
-    const data = await res.json();
+    const response = await fetch('/api/maintenance/clear-all', { method: 'POST' });
+    const data = await response.json();
     
-    if (!data.ativada) {
-      alert("⚠️ Sua licença expirou ou foi desativada. O aplicativo será fechado.");
-      window.location.href = "/ativar.html";
+    if (data.ok) {
+      alert(data.message || '🧹 Limpeza concluída!');
+      // Recarregar a página para atualizar completamente
+      location.reload();
+    } else {
+      alert('Erro na limpeza: ' + (data.error || 'Tente novamente'));
     }
-  } catch(e) {
-    console.log("Erro ao verificar licença");
+  } catch (err) {
+    console.error(err);
+    alert('Erro de rede ao tentar limpar mensagens.');
   }
 }
 
-// Iniciar verificação periódica
-// setInterval(verificarLicencaPeriodica, 30000);
+// Botão DESCONECTAR WHATSAPP
+async function desconectarWhatsApp() {
+  if (!confirm("⚠️ Tem certeza que deseja desconectar o WhatsApp?\n\nA sessão será apagada e um novo QR Code será gerado.")) return;
+  
+  try {
+    const response = await fetch('/api/whatsapp/disconnect', { method: 'POST' });
+    const data = await response.json();
+    
+    if (data.ok) {
+      alert(data.message || 'WhatsApp desconectado. QR Code aparecerá em instantes.');
+      // NÃO recarregar a página – o socket atualizará o QR automaticamente
+    } else {
+      alert('Erro: ' + (data.error || data.message || 'Tente novamente'));
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Erro de rede ao desconectar.');
+  }
+}
+// ============================================================
+// DEMAIS FUNÇÕES DO SISTEMA
+// ============================================================
 
 const socket = io();
 
@@ -832,7 +866,6 @@ let imagemCustomUrl = null;
 function previewImage(fileInputId, previewId) {
   const fileInput = document.getElementById(fileInputId);
   const preview = document.getElementById(previewId);
-  
   if (fileInput.files && fileInput.files[0]) {
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -846,25 +879,18 @@ function previewImage(fileInputId, previewId) {
   }
 }
 
-function uploadBackground() {
+async function uploadBackground() {
   const fileInput = document.getElementById("bg-upload-input");
   const preview = document.getElementById("bg-preview");
-  
   if (fileInput.files && fileInput.files[0]) {
     const reader = new FileReader();
     reader.onload = async function(e) {
       preview.src = e.target.result;
       preview.style.display = "block";
-      
-      // Enviar imagem para o servidor
       const formData = new FormData();
       formData.append("background", fileInput.files[0]);
-      
       try {
-        const res = await fetch("/api/background/upload", {
-          method: "POST",
-          body: formData
-        });
+        const res = await fetch("/api/background/upload", { method: "POST", body: formData });
         const data = await res.json();
         if (data.url) {
           imagemCustomUrl = data.url;
@@ -882,45 +908,28 @@ function uploadBackground() {
 async function aplicarBackground() {
   const selected = document.querySelector('.bg-option.selected');
   if (!selected) return;
-  
   const bgType = selected.getAttribute('data-bg');
-  let bgStyle = '';
   let bgImageUrl = null;
-  
   switch(bgType) {
     case 'custom':
       if (imagemCustomUrl) {
         bgImageUrl = imagemCustomUrl;
-        bgStyle = `url('${imagemCustomUrl}') center/cover`;
       } else {
-        bgStyle = "url('/media/bg.jpg') center/cover";
         bgImageUrl = '/media/bg.jpg';
       }
       break;
-    case 'dark':
-      bgStyle = "#0a0a0a";
-      break;
-    case 'light':
-      bgStyle = "#ffffff";
-      break;
     default:
-      bgStyle = "linear-gradient(135deg, #0f172a, #1e293b)";
+      bgImageUrl = null;
   }
-  
-  // Salvar no localStorage
   localStorage.setItem('zapmix_background', bgType);
   if (bgImageUrl) localStorage.setItem('zapmix_background_image', bgImageUrl);
-  
-  // Aplicar nas páginas do vMix via API
   await api("/api/background/set", {
     method: "POST",
     body: JSON.stringify({ background: bgType, imageUrl: bgImageUrl })
   });
-  
   alert(`✅ Background alterado para ${selected.querySelector('.name').innerText}`);
 }
 
-// Carregar background salvo
 function carregarBackgroundSalvo() {
   const savedBg = localStorage.getItem('zapmix_background');
   if (savedBg) {
@@ -981,7 +990,6 @@ function render(data) {
     } else if (currentMsg.imagemUrl) {
       currentMediaHtml = `<img class="current-media" src="${escapeHtml(currentMsg.imagemUrl)}">`;
     }
-    
     currentContainer.innerHTML = `
       <div class="current-flex">
         <img class="avatar-big" src="${escapeHtml(currentMsg.foto || '/fotos/default.png')}" onerror="this.src='/fotos/default.png'">
@@ -1017,7 +1025,6 @@ function renderMessageList(containerId, messages, isPending) {
     } else if (msg.imagemUrl) {
       mediaHtml = `<img class="message-media" src="${escapeHtml(msg.imagemUrl)}">`;
     }
-    
     return `
       <div class="message-item" id="msg-${msg.id}">
         <div class="time-badge">
@@ -1090,56 +1097,23 @@ async function clearCurrent() {
   load();
 }
 
-// ============ LIMPAR TODAS AS MENSAGENS E MÍDIAS ============
-async function clearAll() {
-  const confirmReset = confirm("⚠️ LIMPEZA TOTAL: Todas as mensagens pendentes, aprovadas, a mensagem em destaque e TODAS as mídias (fotos, vídeos, áudios) serão apagadas.\n\nEssa ação não pode ser desfeita. Continuar?");
-  if (!confirmReset) return;
-  
-  try {
-    const res = await api("/api/maintenance/clear-all", { method: "POST" });
-    alert(`🧹 Limpeza concluída!\n• Mensagens pendentes removidas: ${res.pendingDeleted}\n• Mensagens aprovadas removidas: ${res.approvedDeleted}\n• Mídias deletadas: ${res.photosDeleted}`);
-    load();
-  } catch (error) {
-    alert("Erro ao limpar mensagens. Tente novamente.");
-    console.error(error);
-  }
-}
-
-// ============ DESCONECTAR WHATSAPP ============
-async function desconectarWhatsApp() {
-  if (confirm("⚠️ Tem certeza que deseja desconectar o WhatsApp?\n\nVocê precisará escanear o QR Code novamente para reconectar.")) {
-    try {
-      await api("/api/whatsapp/logout", { method: "POST" });
-      alert("✅ WhatsApp desconectado! Escaneie o QR Code novamente para reconectar.");
-      load();
-    } catch (error) {
-      alert("Erro ao desconectar. Tente novamente.");
-    }
-  }
-}
-
 async function addManual() {
   const nome = document.getElementById("manualNome").value.trim();
   const mensagem = document.getElementById("manualMensagem").value.trim();
   let foto = "";
-  
   const fotoFile = document.getElementById("manualFotoFile").files[0];
-  
   if (!nome || !mensagem) {
     alert("Preencha nome e mensagem para simular uma entrada.");
     return;
   }
-  
   if (fotoFile) {
     const base64 = await fileToBase64(fotoFile);
     foto = base64;
   }
-  
   await api("/api/manual", {
     method: "POST",
     body: JSON.stringify({ nome, mensagem, foto: foto || null })
   });
-  
   document.getElementById("manualMensagem").value = "";
   document.getElementById("manualNome").value = "";
   document.getElementById("manualFotoFile").value = "";
@@ -1147,20 +1121,16 @@ async function addManual() {
   load();
 }
 
-// ============ FUNÇÕES DA ENQUETE ============
 async function carregarEnquete() {
   try {
     const res = await fetch("/api/enquete");
     const data = await res.json();
     const container = document.getElementById("enquete-resultado-content");
-    
     if (!container) return;
-    
     if (data.totalVotos === 0) {
       container.innerHTML = '<div style="text-align:center; padding:20px; color:#64748b;">📊 Nenhum voto ainda</div>';
       return;
     }
-    
     container.innerHTML = data.opcoes.map(op => `
       <div class="enquete-opcao">
         <div class="enquete-opcao-header">
@@ -1172,22 +1142,18 @@ async function carregarEnquete() {
         </div>
       </div>
     `).join("");
-    
     const totalDiv = document.createElement("div");
     totalDiv.className = "enquete-total";
     totalDiv.innerHTML = `📊 Total de votos: ${data.totalVotos}`;
     container.appendChild(totalDiv);
-    
   } catch(e) { 
     console.log("Erro ao carregar enquete:", e); 
   }
 }
 
-// Atualizar URLs
 document.getElementById("vmix-gt-url").innerText = getBaseUrl() + "/vmix-gt.html";
 document.getElementById("vmix-url").innerText = getBaseUrl() + "/vmix.html";
 
-// Inicializar seleção de background
 document.querySelectorAll('.bg-option').forEach(opt => {
   opt.addEventListener('click', () => {
     document.querySelectorAll('.bg-option').forEach(o => o.classList.remove('selected'));
@@ -1199,6 +1165,7 @@ carregarBackgroundSalvo();
 load();
 setInterval(carregarEnquete, 3000);
 carregarEnquete();
+
 </script>
 </body>
 </html>
