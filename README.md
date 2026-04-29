@@ -1,33 +1,34 @@
-CONFIGURAÇÃO NO VMIX
+# 🚀 ZapMix – WhatsApp + Enquete + vMix para TV
 
-GC PRINCIPAL:
-http://localhost:3000/vmix-gt.html
+[![Licença](https://img.shields.io/badge/licença-MIT-green)](LICENSE)
+[![Electron](https://img.shields.io/badge/Electron-41.3.0-blue)](https://www.electronjs.org/)
+[![Node](https://img.shields.io/badge/Node-18+-brightgreen)](https://nodejs.org/)
 
-GC ENQUETE:
-http://localhost:3000/vmix.html
+**ZapMix** é uma aplicação desktop (Windows) que integra **WhatsApp Web**, **enquetes ao vivo** e **vMix** (software de produção de vídeo). Permite receber mensagens de WhatsApp, moderar conteúdos (aprovar, colocar no ar), exibir enquete em tempo real e enviar tudo para o vMix via URLs dinâmicas.
 
+![Tela principal do ZapMix](screenshots/principal.png)
 
-IMPORTANTE:
-Aprovar não coloca no ar.
-Só o botão "Colocar no GT" define o que aparece no ar.
+---
 
-## Como rodar
+## ✨ Funcionalidades
 
-```bash
-npm install
-npm start
-```
+- 📱 **Conexão com WhatsApp** via QR Code (sessão persistente).
+- 🧹 **Moderação**: mensagens pendentes → aprovar → colocar no GT (vMix) sem misturar aprovação e exibição.
+- 📊 **Enquete interativa** – votos por palavras‑chave no WhatsApp (ex: `coração`, `pele`, `cérebro`). Resultados em tempo real.
+- 🖼️ **Suporte a mídias**: imagens, vídeos e áudios recebidos via WhatsApp.
+- 🎛️ **Painel de controlo** com simulação manual de mensagens, edição de conteúdo, fundo personalizado para telas vMix.
+- 🔗 **URLs prontas** para colocar no vMix:
+  - GT principal: `http://localhost:3000/vmix-gt.html`
+  - Enquete: `http://localhost:3000/vmix.html`
+  - Aprovadas (histórico): `http://localhost:3000/datasource/approved`
+- ⚙️ **Fallback de porta** (se 3000 ocupada, tenta até 3010).
+- 📦 **Empacotamento** em um único `.exe` (via Electron) – roda em qualquer Windows sem instalar Node ou navegador.
 
-Painel:
+---
 
-```txt
-http://localhost:3000
-```
+## 📦 Como executar (desenvolvimento)
 
-## Operação correta
-
-1. Mensagem chega em Pendentes.
-2. Clique em Aprovar.
-3. Ela vai para Aprovadas, mas NÃO aparece no GT principal.
-4. Clique em Colocar no GT para exibir.
-5. Para tirar, clique em Tirar do GT.
+1. **Clone o repositório**
+   ```bash
+   git clone https://github.com/andersoncgpb1/zapmix.git
+   cd zapmix
