@@ -20,9 +20,6 @@
 - 🔗 **URLs prontas** para colocar no vMix:
   - GT principal: `http://localhost:3000/vmix-gt.html`
   - Enquete: `http://localhost:3000/vmix.html`
-  - Aprovadas (histórico): `http://localhost:3000/datasource/approved`
-- ⚙️ **Fallback de porta** (se 3000 ocupada, tenta até 3010).
-- 📦 **Empacotamento** em um único `.exe` (via Electron) – roda em qualquer Windows sem instalar Node ou navegador.
 
 ---
 
