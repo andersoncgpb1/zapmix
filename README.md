@@ -1,10 +1,10 @@
-# 🚀 ZapMix – WhatsApp + Enquete + vMix para TV
+# 🚀 ZapMix – WhatsApp + Enquete para TV
 
 [![Licença](https://img.shields.io/badge/licença-MIT-green)](LICENSE)
 [![Electron](https://img.shields.io/badge/Electron-41.3.0-blue)](https://www.electronjs.org/)
 [![Node](https://img.shields.io/badge/Node-18+-brightgreen)](https://nodejs.org/)
 
-**ZapMix** é uma aplicação desktop (Windows) que integra **WhatsApp Web**, **enquetes ao vivo** e **vMix** (software de produção de vídeo). Permite receber mensagens de WhatsApp, moderar conteúdos (aprovar, colocar no ar), exibir enquete em tempo real e enviar tudo para o vMix via URLs dinâmicas.
+**ZapMix** é uma aplicação desktop (Windows) que integra **WhatsApp Web**, **enquetes ao vivo**. Permite receber mensagens de WhatsApp, moderar conteúdos (aprovar, colocar no ar), exibir enquete em tempo real e enviar tudo para o vMix via URLs dinâmicas.
 
 ![Tela principal do ZapMix](screenshots/principal.png)
 
