@@ -26,7 +26,6 @@ function carregarLicencas() {
       licencas = JSON.parse(data);
       console.log(`📋 ${Object.keys(licencas).length} licenças carregadas`);
     } else {
-      // Criar licença de teste
       licencas = {
         "TEST-1234-ABCD-5678": {
           chave: "TEST-1234-ABCD-5678",
@@ -53,9 +52,10 @@ function validarFormatoChave(chave) {
   return /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(chave);
 }
 
+carregarLicencas();
+
 // ============ ROTAS ============
 
-// Validar licença (usada pelo aplicativo)
 app.post("/api/licenca/validar", (req, res) => {
   const { chave, computadorId } = req.body;
   console.log(`🔍 Validando chave: ${chave}`);
@@ -86,7 +86,6 @@ app.post("/api/licenca/validar", (req, res) => {
   });
 });
 
-// Gerar nova licença (usado pelo site)
 app.post("/api/gerar-licenca", (req, res) => {
   const { nome, email, codigo } = req.body;
   
@@ -96,7 +95,6 @@ app.post("/api/gerar-licenca", (req, res) => {
     return res.status(400).json({ erro: "Nome e e-mail são obrigatórios" });
   }
   
-  // Verificar se e-mail já existe
   const emailExistente = Object.values(licencas).find(lic => lic.email === email);
   if (emailExistente) {
     return res.status(400).json({ 
@@ -125,12 +123,10 @@ app.post("/api/gerar-licenca", (req, res) => {
   res.json({ sucesso: true, chave, titular: nome });
 });
 
-// Status da licença
 app.get("/api/licenca/status", (req, res) => {
   res.json({ ativada: false });
 });
 
-// Listar licenças (admin)
 app.get("/api/admin/licencas", (req, res) => {
   const listaLicencas = Object.values(licencas).map(lic => ({
     chave: lic.chave,
@@ -143,7 +139,6 @@ app.get("/api/admin/licencas", (req, res) => {
   res.json({ licencas: listaLicencas });
 });
 
-// Ações admin
 app.post("/api/admin/licencas/acao", (req, res) => {
   const { acao, chave } = req.body;
   const licenca = licencas[chave];
@@ -169,19 +164,53 @@ app.post("/api/admin/licencas/acao", (req, res) => {
   }
 });
 
-// Rota de enquete (opcional)
 app.get("/api/enquete", (req, res) => {
   res.json({
     ativa: true,
-    pergunta: "Enquete ZapMix",
+    pergunta: "O que você mais gosta?",
     opcoes: [],
     totalVotos: 0
   });
 });
 
-carregarLicencas();
+// ============ INICIAR SERVIDOR (COM TRATAMENTO DE PORTA) ============
+const PORTA_PADRAO = 3000;
 
-app.listen(PORT, () => {
-  console.log(`\n🚀 API ZapMix rodando em https://localhost:${PORT}`);
-  console.log(`📋 ${Object.keys(licencas).length} licenças carregadas`);
+function iniciarServidor(porta) {
+	// Rota para a raiz
+app.get("/", (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>ZapMix API</title>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: Arial; text-align: center; padding: 50px; background: #0f172a; color: white; }
+        h1 { color: #90d105; }
+        a { color: #90d105; }
+      </style>
+    </head>
+    <body>
+      <h1>🚀 ZapMix API</h1>
+      <p>API de licenças rodando!</p>
+      <p>📋 <a href="/api/admin/licencas">Ver licenças</a></p>
+      <p>💡 Para usar o aplicativo completo, acesse a interface principal.</p>
+    </body>
+    </html>
+  `);
 });
+  const server = app.listen(porta, () => {
+    console.log(`\n🚀 API rodando em http://localhost:${porta}`);
+    console.log(`📋 ${Object.keys(licencas).length} licenças carregadas`);
+  }).on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.log(`⚠️ Porta ${porta} ocupada, tentando porta ${porta + 1}...`);
+      iniciarServidor(porta + 1);
+    } else {
+      console.error('Erro:', err);
+    }
+  });
+}
+
+iniciarServidor(PORTA_PADRAO);
