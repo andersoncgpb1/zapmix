@@ -1,12 +1,14 @@
 {
   "name": "zapmix",
   "version": "1.0.0",
-  "description": "ZapMix - WhatsApp + Enquete + vMix",
-  "main": "server.js",
+  "description": "ZapMix - WhatsApp + vMix + NDI",
+  "main": "main.js",
+  "author": "Anderson Souza",
+  "license": "MIT",
   "scripts": {
-    "start": "node server.js",
-    "electron": "electron .",
-    "pack": "electron-packager . ZapMix --platform=win32 --arch=x64 --out=release --icon=public/media/logotipo.ico --overwrite && node copy-chromium.js && node copy-assets.js"
+    "start": "electron .",
+    "dev": "node server.js",
+    "build": "electron-builder"
   },
   "dependencies": {
     "axios": "^1.7.9",
@@ -18,7 +20,45 @@
     "whatsapp-web.js": "^1.25.0"
   },
   "devDependencies": {
-    "electron": "^41.3.0",
-    "electron-packager": "^17.1.2"
+    "electron": "^37.10.3",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.zapmix.app",
+    "productName": "ZapMix",
+    "forceCodeSigning": false,
+    "directories": {
+      "buildResources": "build"
+    },
+    "files": [
+      "**/*",
+      "!dist/*",
+      "!release/*",
+      "!node_modules/.cache/*"
+    ],
+    "extraResources": [
+      {
+        "from": "bin",
+        "to": "bin"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/logotipo.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "ZapMix"
+    }
   }
 }

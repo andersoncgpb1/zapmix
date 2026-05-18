@@ -1,0 +1,1 @@
+// reservado para comunicação segura entre Electron e página
