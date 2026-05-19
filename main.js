@@ -1,44 +1,5 @@
-// Adicione no início do arquivo, depois dos requires
-const { autoUpdater } = require('electron-updater');
-
-// Configure o auto-updater
-autoUpdater.setFeedURL({
-  provider: 'github',
-  owner: 'andersoncgpb1',
-  repo: 'zapmix',
-  releaseType: 'release'
-});
-
-// Eventos do auto-updater
-autoUpdater.on('update-available', (info) => {
-  dialog.showMessageBox({
-    type: 'info',
-    title: 'Atualização Disponível',
-    message: `Nova versão ${info.version} disponível. Deseja baixar?`,
-    buttons: ['Sim', 'Mais tarde']
-  }).then((result) => {
-    if (result.response === 0) autoUpdater.downloadUpdate();
-  });
-});
-
-autoUpdater.on('update-downloaded', () => {
-  dialog.showMessageBox({
-    type: 'info',
-    title: 'Atualização Pronta',
-    message: 'Atualização baixada. Reiniciar para instalar?',
-    buttons: ['Reiniciar', 'Mais tarde']
-  }).then((result) => {
-    if (result.response === 0) autoUpdater.quitAndInstall();
-  });
-});
-
-// Chamar verificação ao iniciar
-app.whenReady().then(() => {
-  autoUpdater.checkForUpdatesAndNotify();
-});
-
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
-const { autoUpdater } = require("electron-updater");
+const { autoUpdater } = require("electron-updater"); // ← APENAS UMA VEZ
 const path = require("path");
 const fs = require("fs");
 const http = require("http");
@@ -101,7 +62,6 @@ function criarJanelaPrincipal() {
         mainWindow.show();
     });
 
-    // Fechar completamente quando a janela for fechada
     mainWindow.on('closed', () => {
         app.quit();
     });
@@ -116,12 +76,6 @@ function criarJanelaPrincipal() {
         }
     }, 2000);
 }
-
-// Adicionar no main.js, depois de criar a janela
-ipcMain.on('check-for-updates', () => {
-  console.log('Verificando atualizações manualmente...');
-  autoUpdater.checkForUpdatesAndNotify();
-});
 
 // ============================================================
 // JANELAS NDI
@@ -168,7 +122,7 @@ async function criarJanelasNDI() {
 function criarJanelaAtivacao() {
     mainWindow = new BrowserWindow({
         width: 520,
-        height: 600,
+        height: 650,
         icon: path.join(__dirname, "build", "logotipo.ico"),
         title: "Ativar ZapMix",
         resizable: false,
@@ -186,7 +140,7 @@ function criarJanelaAtivacao() {
 }
 
 // ============================================================
-// AUTO-UPDATE
+// AUTO-UPDATER
 // ============================================================
 function configurarAutoUpdate() {
     if (!mainWindow) return;
@@ -270,6 +224,12 @@ ipcMain.on("licenca:ok", () => {
     }
     startZapMixServer();
     criarJanelaPrincipal();
+    configurarAutoUpdate();
+});
+
+ipcMain.on('check-for-updates', () => {
+    console.log('Verificando atualizações manualmente...');
+    autoUpdater.checkForUpdatesAndNotify();
 });
 
 // ============================================================
@@ -282,6 +242,7 @@ app.whenReady().then(async () => {
         startZapMixServer();
         criarJanelaPrincipal();
         configurarAutoUpdate();
+        autoUpdater.checkForUpdatesAndNotify();
     } else {
         criarJanelaAtivacao();
     }
@@ -300,6 +261,5 @@ app.on('before-quit', () => {
 });
 
 app.on('will-quit', () => {
-    // Forçar saída do processo
     app.exit(0);
 });
