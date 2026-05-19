@@ -319,144 +319,161 @@ function addPending(data) {
 
 let client = null;
 
-function iniciarWhatsApp() {
-    let executablePath = null;
-
-    const possiblePaths = [
-        path.join(process.resourcesPath || "", "app", "node_modules", "puppeteer", ".local-chromium"),
-        path.join(__dirname, "node_modules", "puppeteer", ".local-chromium")
+function encontrarNavegador() {
+    const caminhos = [
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+        "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
+        "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
     ];
 
-    for (const base of possiblePaths) {
-        if (fs.existsSync(base)) {
-            const folders = fs.readdirSync(base).filter(f => f.startsWith("win64-"));
+    for (const caminho of caminhos) {
+        if (fs.existsSync(caminho)) {
+            return caminho;
+        }
+    }
 
-            if (folders.length) {
-                const candidate = path.join(base, folders[0], "chrome-win64", "chrome.exe");
+    return null;
+}
 
-                if (fs.existsSync(candidate)) {
-                    executablePath = candidate;
-                    console.log(`✅ Chromium encontrado em: ${executablePath}`);
-                    break;
-                }
+function iniciarWhatsApp() {
+    try {
+        const executablePath = encontrarNavegador();
+
+        if (!executablePath) {
+            whatsappStatus = "erro";
+            console.log("❌ Chrome ou Edge não encontrado no computador.");
+            emit();
+            return;
+        }
+
+        console.log("🌐 Navegador usado pelo WhatsApp:", executablePath);
+
+        client = new Client({
+            authStrategy: new LocalAuth({
+                clientId: "zapmix",
+                dataPath: authPath
+            }),
+            puppeteer: {
+                headless: true,
+                executablePath,
+                args: [
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--disable-extensions",
+                    "--disable-background-timer-throttling",
+                    "--disable-backgrounding-occluded-windows",
+                    "--disable-renderer-backgrounding"
+                ]
             }
-        }
-    }
+        });
 
-    if (!executablePath) {
-        console.log("⚠️ Chromium não encontrado, tentando Chrome/Edge do sistema");
-    }
+        client.on("qr", async qr => {
+            whatsappStatus = "aguardando_qr";
+            qrCodeDataUrl = await QRCode.toDataURL(qr);
+            console.log("📱 QR Code gerado!");
+            emit();
+        });
 
-    client = new Client({
-        authStrategy: new LocalAuth({
-            clientId: "zapmix",
-            dataPath: authPath
-        }),
-        puppeteer: {
-            headless: true,
-            executablePath,
-            args: [
-                "--no-sandbox",
-                "--disable-setuid-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-gpu"
-            ]
-        }
-    });
+        client.on("ready", () => {
+            whatsappStatus = "conectado";
+            qrCodeDataUrl = null;
+            console.log("✅ WhatsApp conectado!");
+            emit();
+        });
 
-    client.on("qr", async qr => {
-        whatsappStatus = "aguardando_qr";
-        qrCodeDataUrl = await QRCode.toDataURL(qr);
-        emit();
-        console.log("📱 QR Code gerado!");
-    });
+        client.on("authenticated", () => {
+            console.log("🔐 WhatsApp autenticado");
+        });
 
-    client.on("ready", () => {
-        whatsappStatus = "conectado";
-        qrCodeDataUrl = null;
-        emit();
-        console.log("✅ WhatsApp conectado!");
-    });
+        client.on("auth_failure", msg => {
+            whatsappStatus = "erro";
+            console.error("❌ Falha na autenticação:", msg);
+            emit();
+        });
 
-    client.on("authenticated", () => {
-        console.log("🔐 Autenticado");
-    });
+        client.on("disconnected", reason => {
+            whatsappStatus = "desconectado";
+            console.log("⚠️ WhatsApp desconectado:", reason);
+            emit();
+        });
 
-    client.on("auth_failure", msg => {
-        console.error("❌ Falha auth:", msg);
-    });
-
-    client.on("disconnected", reason => {
-        whatsappStatus = "desconectado";
-        emit();
-        console.log("⚠️ Desconectado:", reason);
-    });
-
-    client.on("message", async msg => {
-        try {
-            if (msg.from === "status@broadcast") return;
-
-            const contact = await msg.getContact();
-            const nome = contact.pushname || contact.name || contact.number || "Participante";
-            const telefone = normalizePhone(msg.from);
-
-            let mensagemTexto = msg.body || "";
-            let foto = "/fotos/default.png";
-            let imagemUrl = null;
-            let videoUrl = null;
-            let audioUrl = null;
-
+        client.on("message", async msg => {
             try {
-                const profilePicUrl = await contact.getProfilePicUrl();
+                if (msg.from === "status@broadcast") return;
 
-                if (profilePicUrl) {
-                    foto = await baixarFotoPerfil(profilePicUrl, telefone);
-                }
-            } catch {}
+                const contact = await msg.getContact();
+                const nome = contact.pushname || contact.name || contact.number || "Participante";
+                const telefone = normalizePhone(msg.from);
 
-            if (msg.hasMedia) {
+                let mensagemTexto = msg.body || "";
+                let foto = "/fotos/default.png";
+                let imagemUrl = null;
+                let videoUrl = null;
+                let audioUrl = null;
+
                 try {
-                    const media = await msg.downloadMedia();
-
-                    if (media) {
-                        if (media.mimetype.startsWith("image/")) {
-                            imagemUrl = await salvarMidia(media, msg.id.id, "image");
-                            if (!mensagemTexto) mensagemTexto = "📷 Imagem";
-                        }
-
-                        if (media.mimetype.startsWith("video/")) {
-                            videoUrl = await salvarMidia(media, msg.id.id, "video");
-                            if (!mensagemTexto) mensagemTexto = "🎬 Vídeo";
-                        }
-
-                        if (media.mimetype.startsWith("audio/")) {
-                            audioUrl = await salvarMidia(media, msg.id.id, "audio");
-                            if (!mensagemTexto) mensagemTexto = "🎵 Áudio";
-                        }
+                    const profilePicUrl = await contact.getProfilePicUrl();
+                    if (profilePicUrl) {
+                        foto = await baixarFotoPerfil(profilePicUrl, telefone);
                     }
-                } catch (err) {
-                    console.error("❌ Erro ao baixar mídia:", err.message);
+                } catch {}
+
+                if (msg.hasMedia) {
+                    try {
+                        const media = await msg.downloadMedia();
+
+                        if (media) {
+                            if (media.mimetype.startsWith("image/")) {
+                                imagemUrl = await salvarMidia(media, msg.id.id, "image");
+                                if (!mensagemTexto) mensagemTexto = "📷 Imagem";
+                            }
+
+                            if (media.mimetype.startsWith("video/")) {
+                                videoUrl = await salvarMidia(media, msg.id.id, "video");
+                                if (!mensagemTexto) mensagemTexto = "🎬 Vídeo";
+                            }
+
+                            if (media.mimetype.startsWith("audio/")) {
+                                audioUrl = await salvarMidia(media, msg.id.id, "audio");
+                                if (!mensagemTexto) mensagemTexto = "🎵 Áudio";
+                            }
+                        }
+                    } catch (err) {
+                        console.error("❌ Erro ao baixar mídia:", err.message);
+                    }
                 }
+
+                if (!mensagemTexto && !imagemUrl && !videoUrl && !audioUrl) return;
+
+                addPending({
+                    nome,
+                    telefone,
+                    mensagem: mensagemTexto,
+                    foto,
+                    imagemUrl,
+                    videoUrl,
+                    audioUrl,
+                    origem: "whatsapp"
+                });
+            } catch (err) {
+                console.error("Erro mensagem:", err);
             }
+        });
 
-            if (!mensagemTexto && !imagemUrl && !videoUrl && !audioUrl) return;
+        client.initialize().catch(err => {
+            whatsappStatus = "erro";
+            console.error("❌ Erro ao iniciar WhatsApp:", err.message);
+            emit();
+        });
 
-            addPending({
-                nome,
-                telefone,
-                mensagem: mensagemTexto,
-                foto,
-                imagemUrl,
-                videoUrl,
-                audioUrl,
-                origem: "whatsapp"
-            });
-        } catch (err) {
-            console.error("Erro mensagem:", err);
-        }
-    });
-
-    client.initialize();
+    } catch (err) {
+        whatsappStatus = "erro";
+        console.error("❌ Erro geral no WhatsApp:", err.message);
+        emit();
+    }
 }
 
 // WHATSAPP

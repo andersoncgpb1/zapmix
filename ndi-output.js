@@ -1,3 +1,4 @@
+const { app } = require('electron');
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
@@ -36,7 +37,9 @@ function buscarEstado() {
     return new Promise(resolve => {
         const req = http.get(`http://localhost:${portaServidor}/api/state`, res => {
             let data = '';
+
             res.on('data', chunk => data += chunk);
+
             res.on('end', () => {
                 try {
                     resolve(JSON.parse(data));
@@ -47,6 +50,7 @@ function buscarEstado() {
         });
 
         req.on('error', () => resolve(null));
+
         req.setTimeout(1000, () => {
             req.destroy();
             resolve(null);
@@ -55,7 +59,10 @@ function buscarEstado() {
 }
 
 function obterAudioAtual(state) {
-    const current = state && state.currentMessage ? state.currentMessage : null;
+    const current = state && state.currentMessage
+        ? state.currentMessage
+        : null;
+
     if (!current) return null;
 
     if (current.videoUrl) return current.videoUrl;
@@ -64,19 +71,31 @@ function obterAudioAtual(state) {
     return null;
 }
 
+function getFFmpegPath() {
+    if (app.isPackaged) {
+        return path.join(process.resourcesPath, 'bin', 'ffmpeg.exe');
+    }
+
+    return path.join(__dirname, 'bin', 'ffmpeg.exe');
+}
+
 function criarProcessoNDI(nomeFonte, comAudio = false, audioUrl = null) {
-    const ffmpegPath = path.join(__dirname, 'bin', 'ffmpeg.exe');
+
+    const ffmpegPath = getFFmpegPath();
 
     if (!fs.existsSync(ffmpegPath)) {
         console.log('⚠️ FFmpeg não encontrado:', ffmpegPath);
         return null;
     }
 
+    console.log(`🎬 Usando FFmpeg: ${ffmpegPath}`);
+
     const args = [
         '-hide_banner',
         '-loglevel', 'warning',
 
         '-thread_queue_size', '1024',
+
         '-f', 'rawvideo',
         '-pix_fmt', 'bgra',
         '-s', `${NDI_WIDTH}x${NDI_HEIGHT}`,
@@ -85,26 +104,35 @@ function criarProcessoNDI(nomeFonte, comAudio = false, audioUrl = null) {
     ];
 
     if (comAudio) {
+
         const arquivoAudio = resolverArquivoLocal(audioUrl);
 
         if (arquivoAudio && fs.existsSync(arquivoAudio)) {
+
+            console.log(`🔊 Áudio carregado: ${arquivoAudio}`);
+
             args.push(
                 '-thread_queue_size', '1024',
                 '-i', arquivoAudio
             );
+
         } else {
+
             args.push(
                 '-f', 'lavfi',
                 '-i', 'anullsrc=channel_layout=stereo:sample_rate=48000'
             );
+
         }
 
         args.push(
             '-map', '0:v:0',
             '-map', '1:a:0?',
+
             '-c:a', 'pcm_s16le',
             '-ar', '48000',
             '-ac', '2',
+
             '-af', 'aresample=async=1:first_pts=0'
         );
     }
@@ -124,10 +152,13 @@ function criarProcessoNDI(nomeFonte, comAudio = false, audioUrl = null) {
     });
 
     proc.stderr.on('data', data => {
+
         const msg = data.toString();
+
         if (!msg.includes('frame=')) {
             console.log(`[NDI ${nomeFonte}]: ${msg}`);
         }
+
     });
 
     proc.on('close', code => {
@@ -138,38 +169,58 @@ function criarProcessoNDI(nomeFonte, comAudio = false, audioUrl = null) {
 }
 
 function pararProcesso(proc) {
+
     if (proc && !proc.killed) {
+
         try {
-            if (proc.stdin && !proc.stdin.destroyed) proc.stdin.end();
+
+            if (proc.stdin && !proc.stdin.destroyed) {
+                proc.stdin.end();
+            }
+
             proc.kill();
+
         } catch {}
+
     }
+
 }
 
 function reiniciarGT(audioUrl) {
+
     pararProcesso(ffmpegGT);
 
-    ffmpegGT = criarProcessoNDI('ZapMix - GT', true, audioUrl);
+    ffmpegGT = criarProcessoNDI(
+        'ZapMix - GT',
+        true,
+        audioUrl
+    );
+
     ultimoAudioUrl = audioUrl || null;
 
     if (audioUrl) {
-        console.log(`🔊 Áudio NDI GT ativo: ${audioUrl}`);
+        console.log(`🔊 Áudio GT ativo: ${audioUrl}`);
     } else {
-        console.log('🔇 NDI GT com áudio silencioso');
+        console.log('🔇 GT sem áudio');
     }
 }
 
 function processoValido(proc) {
+
     return proc &&
         !proc.killed &&
         proc.exitCode === null &&
         proc.stdin &&
         !proc.stdin.destroyed &&
         proc.stdin.writable;
+
 }
 
 async function capturarFrame(win) {
-    if (!win || win.isDestroyed()) return null;
+
+    if (!win || win.isDestroyed()) {
+        return null;
+    }
 
     const image = await win.webContents.capturePage();
 
@@ -177,29 +228,50 @@ async function capturarFrame(win) {
         width: NDI_WIDTH,
         height: NDI_HEIGHT
     }).toBitmap();
+
 }
 
 function escreverFrame(proc, buffer) {
-    if (!processoValido(proc) || !buffer) return;
+
+    if (!processoValido(proc) || !buffer) {
+        return;
+    }
 
     try {
+
         proc.stdin.write(buffer);
+
     } catch (err) {
+
         console.log('Erro ao escrever frame:', err.message);
+
     }
+
 }
 
 function iniciarNDI({ gtWindow, enqueteWindow, porta }) {
+
     if (ativo) return;
 
     portaServidor = porta || 3000;
 
-    ffmpegGT = criarProcessoNDI('ZapMix - GT', true, null);
-    ffmpegEnquete = criarProcessoNDI('ZapMix - Enquete', false, null);
+    ffmpegGT = criarProcessoNDI(
+        'ZapMix - GT',
+        true,
+        null
+    );
+
+    ffmpegEnquete = criarProcessoNDI(
+        'ZapMix - Enquete',
+        false,
+        null
+    );
 
     if (!ffmpegGT || !ffmpegEnquete) {
-        console.log('NDI não iniciado.');
+
+        console.log('⚠️ NDI não iniciado');
         return;
+
     }
 
     ativo = true;
@@ -207,42 +279,59 @@ function iniciarNDI({ gtWindow, enqueteWindow, porta }) {
     let contadorEstado = 0;
 
     interval = setInterval(async () => {
+
         if (!ativo) return;
 
         try {
+
             contadorEstado++;
 
             if (contadorEstado >= FPS) {
+
                 contadorEstado = 0;
 
                 const state = await buscarEstado();
+
                 const audioAtual = obterAudioAtual(state);
 
                 if (audioAtual !== ultimoAudioUrl) {
+
                     reiniciarGT(audioAtual);
+
                 }
+
             }
 
             const frameGT = await capturarFrame(gtWindow);
+
             const frameEnquete = await capturarFrame(enqueteWindow);
 
             escreverFrame(ffmpegGT, frameGT);
+
             escreverFrame(ffmpegEnquete, frameEnquete);
+
         } catch (err) {
+
             console.log('Erro no NDI:', err.message);
+
         }
+
     }, Math.round(1000 / FPS));
 
     console.log('🎬 NDI iniciado');
-    console.log('📡 Fontes NDI: ZapMix - GT / ZapMix - Enquete');
+    console.log('📡 Fontes: ZapMix - GT / ZapMix - Enquete');
+
 }
 
 function pararNDI() {
+
     ativo = false;
 
     if (interval) {
+
         clearInterval(interval);
         interval = null;
+
     }
 
     pararProcesso(ffmpegGT);
@@ -253,6 +342,7 @@ function pararNDI() {
     ultimoAudioUrl = null;
 
     console.log('🔌 NDI desligado');
+
 }
 
 module.exports = {
