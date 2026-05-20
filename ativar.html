@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
@@ -6,54 +6,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" type="image/png" href="public/media/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+* { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   background: #f1f5f9;
   background-image: linear-gradient(145deg, #f8fafc 0%, #eef2f6 100%);
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
 }
-
-.container {
-  width: 100%;
-  max-width: 500px;
-}
-
+.container { width: 100%; max-width: 500px; }
 .card {
   background: #ffffff;
   border-radius: 28px;
   padding: 40px;
   border: 1px solid #e9eef3;
-  box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
+  transition: all 0.3s;
 }
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.15);
-}
-
-.logo-area {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.logo-img {
-  height: 70px;
-  width: auto;
-  margin-bottom: 16px;
-}
-
+.card:hover { transform: translateY(-4px); box-shadow: 0 25px 40px -12px rgba(0,0,0,0.15); }
+.logo-area { text-align: center; margin-bottom: 32px; }
+.logo-img { height: 70px; width: auto; margin-bottom: 16px; }
 h1 {
   font-size: 1.8rem;
   font-weight: 800;
@@ -61,20 +38,9 @@ h1 {
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  letter-spacing: -0.5px;
 }
-
-.subtitle {
-  font-size: 0.8rem;
-  color: #90d105;
-  font-weight: 500;
-  margin-top: 4px;
-}
-
-.input-group {
-  margin-top: 20px;
-}
-
+.subtitle { font-size: 0.8rem; color: #90d105; font-weight: 500; margin-top: 4px; }
+.input-group { margin-top: 20px; }
 .input-group label {
   font-size: 0.7rem;
   font-weight: 600;
@@ -84,7 +50,7 @@ h1 {
   margin-bottom: 8px;
   display: block;
 }
-
+.input-group label i { margin-right: 6px; color: #90d105; }
 .input-group input {
   width: 100%;
   padding: 14px 16px;
@@ -94,13 +60,12 @@ h1 {
   font-size: 0.9rem;
   transition: all 0.2s;
   outline: none;
+  font-family: 'Inter', monospace;
 }
-
 .input-group input:focus {
   border-color: #90d105;
-  box-shadow: 0 0 0 3px rgba(144, 209, 5, 0.1);
+  box-shadow: 0 0 0 3px rgba(144,209,5,0.1);
 }
-
 .btn-primary {
   width: 100%;
   margin-top: 24px;
@@ -114,20 +79,13 @@ h1 {
   cursor: pointer;
   transition: all 0.2s;
   font-family: 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  background: #a0e015;
-  box-shadow: 0 4px 12px rgba(144, 209, 5, 0.3);
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
+.btn-primary:hover { transform: translateY(-2px); background: #a0e015; box-shadow: 0 4px 12px rgba(144,209,5,0.3); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 .btn-whatsapp {
   width: 100%;
   margin-top: 16px;
@@ -140,32 +98,14 @@ h1 {
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: 'Inter', sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
 }
-
-.btn-whatsapp:hover {
-  transform: translateY(-2px);
-  background: #128C7E;
-  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
-}
-
-hr {
-  margin: 24px 0;
-  border: none;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
-}
-
-.message-area {
-  margin-top: 20px;
-  text-align: center;
-  min-height: 60px;
-}
-
+.btn-whatsapp:hover { transform: translateY(-2px); background: #128C7E; }
+hr { margin: 24px 0; border: none; height: 1px; background: linear-gradient(90deg, transparent, #e2e8f0, transparent); }
+.message-area { margin-top: 20px; text-align: center; min-height: 60px; }
 .message {
   padding: 12px 16px;
   border-radius: 12px;
@@ -173,63 +113,33 @@ hr {
   font-weight: 500;
   animation: fadeIn 0.3s ease;
 }
-
-.message.success {
-  background: #dcfce7;
-  border: 1px solid #bbf7d0;
-  color: #15803d;
-}
-
-.message.error {
-  background: #fee2e2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
-}
-
-.message.loading {
-  background: #fef3c7;
-  border: 1px solid #fde68a;
-  color: #92400e;
-}
-
+.message.success { background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; }
+.message.error { background: #fee2e2; border: 1px solid #fecaca; color: #991b1b; }
+.message.warning { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; }
+.message.info { background: #dbeafe; border: 1px solid #bfdbfe; color: #1e40af; }
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 .spinner {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(144, 209, 5, 0.3);
+  border: 2px solid rgba(144,209,5,0.3);
   border-top-color: #90d105;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
   margin-right: 8px;
   vertical-align: middle;
 }
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.shake {
-  animation: shake 0.3s ease;
-}
-
+@keyframes spin { to { transform: rotate(360deg); } }
+.shake { animation: shake 0.3s ease; }
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
   75% { transform: translateX(5px); }
 }
-
-.footer {
-  text-align: center;
-  margin-top: 28px;
-  font-size: 0.65rem;
-  color: #94a3b8;
-}
-
+.footer { text-align: center; margin-top: 28px; font-size: 0.65rem; color: #94a3b8; }
 .license-info {
   margin-top: 20px;
   padding: 16px;
@@ -238,27 +148,9 @@ hr {
   border: 1px solid #e2e8f0;
   display: none;
 }
-
-.license-info h4 {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: #90d105;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-}
-
-.license-info p {
-  font-size: 0.75rem;
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.license-info p strong {
-  color: #1e293b;
-}
-
-/* Modal do Formulário */
+.license-info h4 { font-size: 0.7rem; font-weight: 700; color: #90d105; margin-bottom: 12px; text-transform: uppercase; }
+.license-info p { font-size: 0.75rem; margin-bottom: 8px; display: flex; justify-content: space-between; }
+.license-info p strong { color: #1e293b; }
 .modal {
   display: none;
   position: fixed;
@@ -266,17 +158,13 @@ hr {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0,0,0,0.5);
   backdrop-filter: blur(4px);
   z-index: 1000;
   align-items: center;
   justify-content: center;
 }
-
-.modal.active {
-  display: flex;
-}
-
+.modal.active { display: flex; }
 .modal-content {
   background: white;
   border-radius: 24px;
@@ -284,21 +172,20 @@ hr {
   max-width: 450px;
   width: 90%;
 }
-
-.modal-content h3 {
-  font-size: 1.3rem;
-  margin-bottom: 20px;
-  color: #0f172a;
-  text-align: center;
+.modal-content h3 { font-size: 1.3rem; margin-bottom: 20px; color: #0f172a; text-align: center; }
+.modal-buttons { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+.btn-secondary {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+  padding: 10px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s;
 }
-
-.modal-buttons {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 24px;
-}
-
+.btn-secondary:hover { background: #ffffff; border-color: #90d105; }
 @media (max-width: 520px) {
   .card { padding: 28px 20px; }
   h1 { font-size: 1.5rem; }
@@ -317,14 +204,15 @@ hr {
     </div>
 
     <div class="input-group">
-      <label>🔑 Chave de licença</label>
-      <input type="text" id="chave" placeholder="Ex: ZAPMIX-2026-CLIENTE" autocomplete="off">
+      <label><i class="fas fa-key"></i> Chave de licença</label>
+      <input type="text" id="chave" placeholder="Ex: ZAPMIX-1B95-688C-C1AC" autocomplete="off">
     </div>
 
-    <button class="btn-primary" onclick="ativar()" id="btnAtivar">Ativar Licença</button>
+    <button class="btn-primary" onclick="ativar()" id="btnAtivar">
+      <i class="fas fa-check-circle"></i> Ativar Licença
+    </button>
 
     <hr>
-
     <button class="btn-whatsapp" onclick="abrirModalWhatsApp()">
       <i class="fab fa-whatsapp"></i> Solicitar Chave via WhatsApp
     </button>
@@ -332,58 +220,44 @@ hr {
     <div id="messageArea" class="message-area"></div>
 
     <div id="licenseInfo" class="license-info">
-      <h4>📋 Informações da Licença</h4>
-      <p><span>👤 Cliente:</span> <strong id="infoCliente">-</strong></p>
-      <p><span>📅 Validade:</span> <strong id="infoValidade">-</strong></p>
-      <p><span>📊 Status:</span> <strong id="infoStatus">-</strong></p>
+      <h4><i class="fas fa-info-circle"></i> Informações da Licença</h4>
+      <p><span><i class="fas fa-user"></i> Cliente:</span> <strong id="infoCliente">-</strong></p>
+      <p><span><i class="fas fa-calendar"></i> Validade:</span> <strong id="infoValidade">-</strong></p>
+      <p><span><i class="fas fa-chart-line"></i> Status:</span> <strong id="infoStatus">-</strong></p>
     </div>
-
-    <div class="footer">
-      © 2026 ZapMix • Todos os direitos reservados
-    </div>
+    <div class="footer">© 2026 ZapMix • Todos os direitos reservados</div>
   </div>
 </div>
 
-<!-- Modal do Formulário WhatsApp -->
+<!-- Modal WhatsApp -->
 <div id="whatsappModal" class="modal">
   <div class="modal-content">
-    <h3>📱 Solicitar Chave</h3>
-    <div class="input-group">
-      <label>Nome completo *</label>
-      <input type="text" id="whatsappNome" placeholder="Digite seu nome completo">
-    </div>
-    <div class="input-group">
-      <label>E-mail *</label>
-      <input type="email" id="whatsappEmail" placeholder="seu@email.com">
-    </div>
-    <div class="input-group">
-      <label>Telefone com DDD *</label>
-      <input type="tel" id="whatsappTelefone" placeholder="(83) 98628-0769">
-    </div>
-    <div class="input-group">
-      <label>Empresa</label>
-      <input type="text" id="whatsappEmpresa" placeholder="Nome da sua empresa">
-    </div>
+    <h3><i class="fab fa-whatsapp"></i> Solicitar Chave</h3>
+    <div class="input-group"><label><i class="fas fa-user"></i> Nome completo *</label><input type="text" id="whatsappNome" placeholder="Digite seu nome completo"></div>
+    <div class="input-group"><label><i class="fas fa-envelope"></i> E-mail *</label><input type="email" id="whatsappEmail" placeholder="seu@email.com"></div>
+    <div class="input-group"><label><i class="fas fa-phone"></i> Telefone com DDD *</label><input type="tel" id="whatsappTelefone" placeholder="(83) 98628-0769"></div>
+    <div class="input-group"><label><i class="fas fa-building"></i> Empresa</label><input type="text" id="whatsappEmpresa" placeholder="Nome da sua empresa"></div>
     <div class="modal-buttons">
-      <button class="btn-secondary" onclick="fecharModalWhatsApp()" style="background:#f1f5f9;border:1px solid #e2e8f0;padding:10px 20px;border-radius:12px;">Cancelar</button>
-      <button class="btn-primary" onclick="enviarWhatsApp()" style="margin-top:0;">Enviar</button>
+      <button class="btn-secondary" onclick="fecharModalWhatsApp()"><i class="fas fa-times"></i> Cancelar</button>
+      <button class="btn-primary" onclick="enviarWhatsApp()" style="margin-top:0;"><i class="fab fa-whatsapp"></i> Enviar</button>
     </div>
   </div>
 </div>
 
 <script>
+// Usar o ipcRenderer do Electron
 const { ipcRenderer, shell } = require("electron");
 
-// Configuração - ALTERE PARA SEU NÚMERO DO WHATSAPP
-const WHATSAPP_NUMBER = "5583986280769"; // ← Coloque seu número aqui
-const API_URL = "https://zapmix-site.vercel.app/api/license/validate";
+const WHATSAPP_NUMBER = "5583986280769";
 
 function showMessage(text, type = "loading") {
   const container = document.getElementById("messageArea");
   const icons = {
     loading: '<span class="spinner"></span>',
-    success: '✓ ',
-    error: '✗ '
+    success: '<i class="fas fa-check-circle"></i> ',
+    error: '<i class="fas fa-exclamation-triangle"></i> ',
+    warning: '<i class="fas fa-exclamation-triangle"></i> ',
+    info: '<i class="fas fa-info-circle"></i> '
   };
   container.innerHTML = `<div class="message ${type}">${icons[type] || ''}${text}</div>`;
 }
@@ -396,19 +270,22 @@ function showLicenseInfo(data) {
   document.getElementById("infoCliente").innerText = data.cliente || "-";
   document.getElementById("infoValidade").innerText = data.validade || "-";
   
-  let bgColor, textColor;
+  let bgColor, textColor, icon;
   if (data.status === "ATIVA") {
     bgColor = "#dcfce7";
     textColor = "#15803d";
+    icon = '<i class="fas fa-check-circle"></i> ';
   } else if (data.status === "BLOQUEADA") {
     bgColor = "#fee2e2";
     textColor = "#991b1b";
+    icon = '<i class="fas fa-lock"></i> ';
   } else {
     bgColor = "#fef3c7";
     textColor = "#92400e";
+    icon = '<i class="fas fa-clock"></i> ';
   }
   
-  document.getElementById("infoStatus").innerHTML = `<span style="display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; background:${bgColor}; color:${textColor};">${data.status}</span>`;
+  document.getElementById("infoStatus").innerHTML = `<span style="display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; background:${bgColor}; color:${textColor};">${icon}${data.status}</span>`;
   document.getElementById("licenseInfo").style.display = "block";
 }
 
@@ -434,39 +311,26 @@ function enviarWhatsApp() {
   const telefone = document.getElementById("whatsappTelefone").value.trim();
   const empresa = document.getElementById("whatsappEmpresa").value.trim();
   
-  if (!nome) {
-    showMessage("Por favor, digite seu nome", "error");
-    return;
-  }
+  if (!nome) { showMessage("Digite seu nome", "error"); return; }
+  if (!email) { showMessage("Digite seu e-mail", "error"); return; }
+  if (!telefone) { showMessage("Digite seu telefone", "error"); return; }
   
-  if (!email) {
-    showMessage("Por favor, digite seu e-mail", "error");
-    return;
-  }
-  
-  if (!telefone) {
-    showMessage("Por favor, digite seu telefone", "error");
-    return;
-  }
-  
-  // Montar mensagem com todos os dados
   const mensagem = `*NOVA SOLICITAÇÃO DE LICENÇA - ZAPMIX*%0A%0A` +
     `📌 *Nome:* ${encodeURIComponent(nome)}%0A` +
     `📧 *E-mail:* ${encodeURIComponent(email)}%0A` +
     `📱 *Telefone:* ${encodeURIComponent(telefone)}%0A` +
     `🏢 *Empresa:* ${encodeURIComponent(empresa || 'Não informada')}%0A%0A` +
-    `🔑 *Solicitação de chave de licença para ativação do ZapMix*%0A%0A` +
+    `🔑 *Solicitação de chave de licença*%0A%0A` +
     `Aguardando retorno.`;
   
   const linkWhatsApp = `https://wa.me/${WHATSAPP_NUMBER}?text=${mensagem}`;
-  
   fecharModalWhatsApp();
   shell.openExternal(linkWhatsApp);
-  showMessage("📱 WhatsApp aberto! Envie a mensagem para solicitar sua chave.", "success");
+  showMessage("📱 WhatsApp aberto! Envie a mensagem.", "success");
 }
 
 async function ativar() {
-  const chave = document.getElementById("chave").value.trim();
+  const chave = document.getElementById("chave").value.trim().toUpperCase();
   const btn = document.getElementById("btnAtivar");
   const input = document.getElementById("chave");
   
@@ -486,99 +350,74 @@ async function ativar() {
   btn.innerHTML = '<span class="spinner"></span> Validando...';
   btn.disabled = true;
   
-  showMessage("Validando licença nos servidores...", "loading");
+  showMessage("Validando licença...", "loading");
   
   try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chave })
-    });
+    // Chamar a validação via IPC (main process)
+    const result = await ipcRenderer.invoke("licenca:ativar", chave);
     
-    const result = await response.json();
+    console.log("Resultado da validação:", result);
     
-    if (result.ok) {
+    if (result && result.ok) {
       showMessage(`✅ Licença ativada com sucesso!`, "success");
-      localStorage.setItem("zapmix_license_data", JSON.stringify(result.data));
-      if (result.data) showLicenseInfo(result.data);
+      if (result.licenca) showLicenseInfo(result.licenca);
       
       setTimeout(() => {
         ipcRenderer.send("licenca:ok");
       }, 1500);
     } else {
-      showMessage(result.error || "Licença inválida ou expirada", "error");
+      let errorMessage = "";
+      let errorType = "error";
+      
+      if (result && result.status === "BLOQUEADA") {
+        errorMessage = "🔒 Licença BLOQUEADA.\n\nEntre em contato com o suporte.";
+        errorType = "warning";
+      } else if (result && result.status === "EXPIRADA") {
+        errorMessage = "⏰ Licença EXPIRADA.\n\nRenove sua licença.";
+        errorType = "warning";
+      } else if (result && result.error) {
+        if (result.error.includes("outro computador") || result.error.includes("outra máquina")) {
+          errorMessage = "🖥️ Licença já está ativada em OUTRO COMPUTADOR.\n\nLibere a máquina anterior no painel administrativo.";
+          errorType = "warning";
+        } else {
+          errorMessage = result.error;
+        }
+      } else {
+        errorMessage = "❌ Falha na validação da licença. Tente novamente.";
+      }
+      
+      showMessage(errorMessage, errorType);
       btn.innerHTML = originalText;
       btn.disabled = false;
       input.classList.add("shake");
       setTimeout(() => input.classList.remove("shake"), 300);
-      
-      if (result.data) {
-        setTimeout(() => showLicenseInfo(result.data), 2000);
-      }
     }
   } catch (error) {
     console.error("Erro na validação:", error);
-    
-    try {
-      showMessage("Tentando validação local...", "loading");
-      const localResult = await ipcRenderer.invoke("licenca:ativar", chave);
-      
-      if (localResult && localResult.ok) {
-        showMessage("✅ Licença ativada com sucesso (modo local)!", "success");
-        setTimeout(() => ipcRenderer.send("licenca:ok"), 800);
-      } else {
-        showMessage("Erro de conexão. Verifique sua internet e tente novamente.", "error");
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      }
-    } catch (localErr) {
-      showMessage("Erro de comunicação com os servidores. Tente novamente mais tarde.", "error");
-      btn.innerHTML = originalText;
-      btn.disabled = false;
-    }
+    showMessage("🌐 Erro de comunicação. Verifique sua internet e tente novamente.", "error");
+    btn.innerHTML = originalText;
+    btn.disabled = false;
   }
 }
 
-// Verificar se já tem licença ativa ao carregar
+// Verificar licença salva ao carregar
 async function verificarLicencaAtiva() {
-  const savedKey = localStorage.getItem("zapmix_license_key");
-  if (savedKey) {
-    document.getElementById("chave").value = savedKey;
-    
-    try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chave: savedKey })
-      });
-      
-      const result = await response.json();
-      
-      if (result.ok && result.data && result.data.status === "ATIVA") {
+  try {
+    const savedKey = localStorage.getItem("zapmix_license_key");
+    if (savedKey) {
+      document.getElementById("chave").value = savedKey;
+      const result = await ipcRenderer.invoke("licenca:ativar", savedKey);
+      if (result && result.ok) {
         showMessage(`✅ Licença ativa!`, "success");
-        showLicenseInfo(result.data);
-        setTimeout(() => {
-          ipcRenderer.send("licenca:ok");
-        }, 1000);
-      } else if (result.data) {
-        showLicenseInfo(result.data);
+        if (result.licenca) showLicenseInfo(result.licenca);
+        setTimeout(() => ipcRenderer.send("licenca:ok"), 1000);
       }
-    } catch (error) {
-      console.error("Erro ao verificar licença:", error);
     }
+  } catch (error) {
+    console.error("Erro ao verificar licença:", error);
   }
 }
 
-// Verificar atualizações do app (recebido do main process)
-ipcRenderer.on('update-status', (event, message) => {
-  showMessage(message, "info");
-});
-
-ipcRenderer.on('update-progress', (event, percent) => {
-  showMessage(`Baixando atualização: ${percent}%`, "loading");
-});
-
-// Permitir Enter para ativar
 document.getElementById("chave").addEventListener("keypress", (e) => {
   if (e.key === "Enter") {
     const btn = document.getElementById("btnAtivar");
@@ -586,7 +425,6 @@ document.getElementById("chave").addEventListener("keypress", (e) => {
   }
 });
 
-// Inicializar
 verificarLicencaAtiva();
 </script>
 </body>

@@ -9,10 +9,11 @@ const { iniciarNDI, pararNDI } = require("./ndi-output");
 const { validarLicenca, verificarLicencaSalva } = require("./license-manager");
 
 let mainWindow;
-let exibidorWindow;  // ANTES: gtWindow
+let exibidorWindow;
 let enqueteWindow;
 let portaAtual = 3000;
 let ndiIniciado = false;
+let servidorIniciado = false;
 
 // ============================================================
 // FUNÇÕES DE UTILIDADE
@@ -39,10 +40,18 @@ function verificarServidor(porta) {
     });
 }
 
-// ============================================================
-// JANELA PRINCIPAL
-// ============================================================
+function iniciarServidorUmaVez() {
+    if (servidorIniciado) return;
+    servidorIniciado = true;
+    startZapMixServer();
+}
+
 function criarJanelaPrincipal() {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.focus();
+        return;
+    }
+
     mainWindow = new BrowserWindow({
         width: 1400,
         height: 900,
@@ -59,16 +68,24 @@ function criarJanelaPrincipal() {
     mainWindow.loadFile('loading.html');
 
     mainWindow.once('ready-to-show', () => {
-        mainWindow.show();
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.show();
+        }
     });
 
     mainWindow.on('closed', () => {
-        app.quit();
+        mainWindow = null;
     });
 
     const timer = setInterval(async () => {
+        if (!mainWindow || mainWindow.isDestroyed()) {
+            clearInterval(timer);
+            return;
+        }
+
         portaAtual = lerPorta();
         const ok = await verificarServidor(portaAtual);
+
         if (ok) {
             clearInterval(timer);
             await mainWindow.loadURL(`http://localhost:${portaAtual}`);
@@ -77,13 +94,10 @@ function criarJanelaPrincipal() {
     }, 2000);
 }
 
-// ============================================================
-// JANELAS NDI
-// ============================================================
 async function criarJanelasNDI() {
     if (ndiIniciado) return;
 
-    exibidorWindow = new BrowserWindow({  // ANTES: gtWindow
+    exibidorWindow = new BrowserWindow({
         width: 1920,
         height: 1080,
         show: false,
@@ -109,18 +123,19 @@ async function criarJanelasNDI() {
         }
     });
 
-    // CARREGAR O NOVO ARQUIVO exibidor.html
-    await exibidorWindow.loadURL(`http://localhost:${portaAtual}/exibidor.html`);  // ANTES: vmix-gt.html
-	await enqueteWindow.loadURL(`http://localhost:${portaAtual}/enquete-exibidor.html`);
+    await exibidorWindow.loadURL(`http://localhost:${portaAtual}/exibidor.html`);
+    await enqueteWindow.loadURL(`http://localhost:${portaAtual}/enquete-exibidor.html`);
 
     ndiIniciado = true;
-    iniciarNDI({ exibidorWindow, enqueteWindow, porta: portaAtual });  // ANTES: gtWindow
+    iniciarNDI({ exibidorWindow, enqueteWindow, porta: portaAtual });
 }
 
-// ============================================================
-// JANELA DE ATIVAÇÃO
-// ============================================================
 function criarJanelaAtivacao() {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.focus();
+        return;
+    }
+
     mainWindow = new BrowserWindow({
         width: 520,
         height: 650,
@@ -134,18 +149,17 @@ function criarJanelaAtivacao() {
     });
 
     mainWindow.loadFile("ativar.html");
-    
+
     mainWindow.on('closed', () => {
-        app.quit();
+        mainWindow = null;
     });
 }
 
-// ============================================================
-// AUTO-UPDATER
-// ============================================================
 function configurarAutoUpdate() {
-    if (!mainWindow) return;
-    
+    if (!mainWindow || mainWindow.isDestroyed()) return;
+
+    autoUpdater.removeAllListeners();
+
     autoUpdater.on('checking-for-update', () => {
         console.log('Verificando atualizações...');
         if (mainWindow && !mainWindow.isDestroyed()) {
@@ -153,18 +167,17 @@ function configurarAutoUpdate() {
         }
     });
 
-    autoUpdater.on('update-available', (info) => {
+    autoUpdater.on('update-available', info => {
         console.log('Atualização disponível!');
         if (mainWindow && !mainWindow.isDestroyed()) {
             mainWindow.webContents.send('update-status', `Nova versão ${info.version} disponível!`);
         }
-        
         dialog.showMessageBox(mainWindow, {
             type: 'info',
             title: 'Atualização Disponível',
             message: `Uma nova versão (${info.version}) está disponível. Deseja baixar agora?`,
             buttons: ['Sim', 'Mais tarde']
-        }).then((result) => {
+        }).then(result => {
             if (result.response === 0) {
                 autoUpdater.downloadUpdate();
             }
@@ -178,33 +191,32 @@ function configurarAutoUpdate() {
         }
     });
 
-    autoUpdater.on('error', (err) => {
+    autoUpdater.on('error', err => {
         console.error('Erro na atualização:', err);
         if (mainWindow && !mainWindow.isDestroyed()) {
             mainWindow.webContents.send('update-status', 'Erro ao verificar atualizações');
         }
     });
 
-    autoUpdater.on('download-progress', (progressObj) => {
-        let percent = progressObj.percent.toFixed(2);
+    autoUpdater.on('download-progress', progressObj => {
+        const percent = progressObj.percent.toFixed(2);
         console.log(`Download: ${percent}%`);
         if (mainWindow && !mainWindow.isDestroyed()) {
             mainWindow.webContents.send('update-progress', percent);
         }
     });
 
-    autoUpdater.on('update-downloaded', (info) => {
+    autoUpdater.on('update-downloaded', () => {
         console.log('Atualização baixada!');
         if (mainWindow && !mainWindow.isDestroyed()) {
             mainWindow.webContents.send('update-status', 'Atualização baixada! Reiniciando...');
         }
-        
         dialog.showMessageBox(mainWindow, {
             type: 'info',
             title: 'Atualização Pronta',
             message: 'A atualização foi baixada. Reiniciar o aplicativo para instalar?',
             buttons: ['Reiniciar agora', 'Mais tarde']
-        }).then((result) => {
+        }).then(result => {
             if (result.response === 0) {
                 autoUpdater.quitAndInstall();
             }
@@ -216,44 +228,92 @@ function configurarAutoUpdate() {
 // IPC HANDLERS
 // ============================================================
 ipcMain.handle("licenca:ativar", async (event, chave) => {
-    return await validarLicenca(chave);
+    console.log("🔑 Validando chave:", chave);
+    const resultado = await validarLicenca(chave);
+    console.log("📋 Resultado:", resultado);
+    return resultado;
 });
 
 ipcMain.on("licenca:ok", () => {
+    console.log("✅ Licença validada! Iniciando sistema...");
+
     if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.close();
+        mainWindow = null;
     }
-    startZapMixServer();
-    criarJanelaPrincipal();
-    configurarAutoUpdate();
+
+    iniciarServidorUmaVez();
+
+    let tentativas = 0;
+    const maxTentativas = 20;
+
+    const aguardarServidor = setInterval(async () => {
+        tentativas++;
+        const porta = lerPorta();
+        const servidorOk = await verificarServidor(porta);
+
+        if (servidorOk) {
+            clearInterval(aguardarServidor);
+            console.log("✅ Servidor pronto! Abrindo aplicação...");
+            criarJanelaPrincipal();
+            configurarAutoUpdate();
+            if (app.isPackaged) {
+                autoUpdater.checkForUpdatesAndNotify();
+            }
+        } else if (tentativas >= maxTentativas) {
+            clearInterval(aguardarServidor);
+            console.error("❌ Servidor não iniciou após várias tentativas");
+        }
+    }, 1000);
 });
 
-ipcMain.on('check-for-updates', () => {
-    console.log('Verificando atualizações manualmente...');
-    autoUpdater.checkForUpdatesAndNotify();
+ipcMain.on("check-for-updates", () => {
+    console.log("Verificando atualizações manualmente...");
+    if (app.isPackaged) {
+        autoUpdater.checkForUpdatesAndNotify();
+    }
 });
 
 // ============================================================
 // INICIALIZAÇÃO DO APP
 // ============================================================
 app.whenReady().then(async () => {
+    console.log("🚀 Aplicativo iniciando...");
+
     const licenca = await verificarLicencaSalva();
-    
+
     if (licenca && licenca.ok) {
-        startZapMixServer();
-        criarJanelaPrincipal();
-        configurarAutoUpdate();
-        autoUpdater.checkForUpdatesAndNotify();
+        console.log("✅ Licença válida encontrada!");
+
+        iniciarServidorUmaVez();
+
+        setTimeout(() => {
+            criarJanelaPrincipal();
+            configurarAutoUpdate();
+            if (app.isPackaged) {
+                autoUpdater.checkForUpdatesAndNotify();
+            }
+        }, 2000);
     } else {
+        console.log("⚠️ Nenhuma licença válida. Mostrando tela de ativação...");
         criarJanelaAtivacao();
     }
 });
 
 // ============================================================
-// FINALIZAR PROCESSO CORRETAMENTE
+// FINALIZAR PROCESSO
 // ============================================================
 app.on('window-all-closed', () => {
     pararNDI();
+
+    if (exibidorWindow && !exibidorWindow.isDestroyed()) {
+        exibidorWindow.close();
+    }
+
+    if (enqueteWindow && !enqueteWindow.isDestroyed()) {
+        enqueteWindow.close();
+    }
+
     app.quit();
 });
 

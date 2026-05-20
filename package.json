@@ -1,6 +1,6 @@
 {
   "name": "zapmix",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "ZapMix - WhatsApp + vMix + NDI",
   "main": "main.js",
   "author": "Anderson Souza",
@@ -9,6 +9,7 @@
     "start": "electron .",
     "dev": "node server.js",
     "build": "electron-builder",
+    "dist": "electron-builder --win --x64",
     "publish": "electron-builder --publish always"
   },
   "dependencies": {
@@ -49,9 +50,7 @@
       "target": [
         {
           "target": "nsis",
-          "arch": [
-            "x64"
-          ]
+          "arch": ["x64"]
         }
       ],
       "icon": "build/logotipo.ico"

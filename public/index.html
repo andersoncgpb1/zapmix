@@ -299,6 +299,23 @@ button.full-width { width: 100%; margin-top: 16px; padding: 12px; font-size: 0.8
 </head>
 <body>
 
+<!-- Barra de Progresso de Atualização -->
+<div id="update-progress" style="display: none; position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 16px 20px; border-radius: 20px; z-index: 10000; font-size: 0.85rem; box-shadow: 0 10px 25px rgba(0,0,0,0.2); min-width: 280px; backdrop-filter: blur(8px); border: 1px solid rgba(144,209,5,0.3);">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <i class="fas fa-download" style="color: #90d105; font-size: 1.2rem;"></i>
+        <span id="update-message" style="flex: 1;">Verificando atualizações...</span>
+        <button onclick="fecharProgressoUpdate()" style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 0; margin: 0; font-size: 1rem;">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div style="background: #334155; border-radius: 40px; height: 6px; width: 100%; overflow: hidden;">
+        <div id="update-bar" style="background: linear-gradient(90deg, #90d105, #a0e015); border-radius: 40px; height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+    </div>
+    <div style="margin-top: 8px; font-size: 0.65rem; color: #94a3b8; text-align: center;">
+        <span id="update-speed"></span>
+    </div>
+</div>
+
 <header>
   <div class="logo-area">
     <img class="logo-img" src="/media/logotipo.png" alt="ZapMix" onerror="this.style.display='none';">
@@ -759,6 +776,82 @@ function renderMessageList(containerId, messages, isPending) {
     
     return `<div class="message-item"><div class="time-badge"><span><i class="far fa-clock"></i> ${escapeHtml(msg.horario || "agora")}</span><span><i class="fas fa-globe"></i> ${escapeHtml(msg.origem || "whatsapp")}</span></div><div class="avatar-row"><img class="avatar-img" src="${escapeHtml(msg.foto || '/fotos/default.png')}" onerror="this.src='/fotos/default.png'"><div style="flex:1"><div class="msg-name">${escapeHtml(msg.nome)}</div><div class="msg-text">${escapeHtml(msg.mensagem)}</div>${media}</div></div><div style="margin-top:14px; display:flex; flex-wrap:wrap; gap:8px;">${isPending ? `<button class="yellow-warning" onclick="confirmarAprovarMensagem('${msg.id}')"><i class="fas fa-check"></i> Aprovar</button>` : removeBtn}${onAirBtn}${isPending ? `<button class="red-danger" onclick="confirmarRejeitarMensagem('${msg.id}')"><i class="fas fa-times"></i> Rejeitar</button>` : ""}<button onclick="toggleEditMessage('${msg.id}')"><i class="fas fa-edit"></i> Editar</button></div><div class="edit-panel" id="edit-panel-${msg.id}"><label><i class="fas fa-user"></i> Nome</label><input id="edit-nome-${msg.id}" value="${escapeHtml(msg.nome)}"><label><i class="fas fa-comment"></i> Mensagem</label><textarea id="edit-mensagem-${msg.id}" rows="2">${escapeHtml(msg.mensagem)}</textarea><label><i class="fas fa-image"></i> URL foto</label><input id="edit-foto-${msg.id}" value="${escapeHtml(msg.foto || "")}"><label><i class="fas fa-file-image"></i> URL imagem</label><input id="edit-imagem-${msg.id}" value="${escapeHtml(msg.imagemUrl || "")}"><label><i class="fas fa-video"></i> URL vídeo</label><input id="edit-video-${msg.id}" value="${escapeHtml(msg.videoUrl || "")}"><label><i class="fas fa-music"></i> URL áudio</label><input id="edit-audio-${msg.id}" value="${escapeHtml(msg.audioUrl || "")}"><button class="primary-green" onclick="saveEditMessage('${msg.id}')"><i class="fas fa-save"></i> Salvar</button></div></div>`;
   }).join("");
+}
+// ============================================================
+// AUTO-UPDATE COM PROGRESSO
+// ============================================================
+const { ipcRenderer } = require('electron');
+
+function fecharProgressoUpdate() {
+    document.getElementById('update-progress').style.display = 'none';
+}
+
+// Receber eventos do auto-updater
+ipcRenderer.on('update-status', (event, message) => {
+    const div = document.getElementById('update-progress');
+    const span = document.getElementById('update-message');
+    if (div && span) {
+        div.style.display = 'block';
+        span.innerHTML = message;
+    }
+});
+
+ipcRenderer.on('update-progress', (event, progress) => {
+    const bar = document.getElementById('update-bar');
+    const speedSpan = document.getElementById('update-speed');
+    const messageSpan = document.getElementById('update-message');
+    
+    if (bar) {
+        bar.style.width = `${progress.percent}%`;
+    }
+    if (speedSpan) {
+        speedSpan.innerHTML = `${progress.percent}% concluído - ${progress.speed} MB/s`;
+    }
+    if (messageSpan) {
+        messageSpan.innerHTML = `📥 Baixando: ${progress.percent}%`;
+    }
+});
+
+ipcRenderer.on('update-available', (event, info) => {
+    console.log(`Nova versão ${info.version} disponível`);
+    const div = document.getElementById('update-progress');
+    if (div) div.style.display = 'block';
+});
+
+ipcRenderer.on('update-downloaded', (event, info) => {
+    console.log(`Versão ${info.version} baixada. Reiniciando...`);
+    const messageSpan = document.getElementById('update-message');
+    if (messageSpan) {
+        messageSpan.innerHTML = '✅ Atualização baixada! Reiniciando...';
+    }
+});
+
+ipcRenderer.on('update-error', (event, error) => {
+    console.error('Erro na atualização:', error);
+    const messageSpan = document.getElementById('update-message');
+    if (messageSpan) {
+        messageSpan.innerHTML = '❌ Erro ao atualizar. Tente novamente mais tarde.';
+    }
+    setTimeout(() => {
+        const div = document.getElementById('update-progress');
+        if (div) div.style.display = 'none';
+    }, 5000);
+});
+
+ipcRenderer.on('hide-update-progress', () => {
+    setTimeout(() => {
+        const div = document.getElementById('update-progress');
+        if (div) div.style.display = 'none';
+    }, 3000);
+});
+
+// Botão manual para verificar atualizações (opcional)
+function verificarAtualizacoes() {
+    ipcRenderer.send('check-for-updates');
+    const div = document.getElementById('update-progress');
+    if (div) div.style.display = 'block';
+    const messageSpan = document.getElementById('update-message');
+    if (messageSpan) messageSpan.innerHTML = '🔄 Verificando atualizações...';
 }
 
 function toggleEditMessage(id) { const p = document.getElementById(`edit-panel-${id}`); if (p) p.style.display = p.style.display === "flex" ? "none" : "flex"; }
