@@ -476,6 +476,10 @@ function iniciarWhatsApp() {
     }
 }
 
+// ============================================================
+// ENDPOINTS
+// ============================================================
+
 // WHATSAPP
 app.post("/api/whatsapp/disconnect", async (req, res) => {
     console.log("🔌 Solicitado desconectar WhatsApp");
@@ -696,6 +700,44 @@ app.post("/api/maintenance/clear-all", (req, res) => {
     res.json({ ok: true, message: "Todas as mensagens foram apagadas." });
 });
 
+// ============================================================
+// ENDPOINTS PARA MENSAGENS APROVADAS
+// ============================================================
+
+// Limpar TODAS as mensagens aprovadas
+app.post("/api/approved/clear-all", (req, res) => {
+    try {
+        const quantidade = approvedMessages.length;
+        approvedMessages = [];
+        console.log(`✅ ${quantidade} mensagens aprovadas removidas`);
+        emit();
+        res.json({ ok: true, message: `${quantidade} mensagens aprovadas removidas.`, quantidade });
+    } catch (error) {
+        console.error("❌ Erro ao limpar aprovadas:", error);
+        res.status(500).json({ ok: false, error: error.message });
+    }
+});
+
+// Remover uma mensagem aprovada individualmente
+app.post("/api/approved/:id/remove", (req, res) => {
+    try {
+        const id = req.params.id;
+        const index = approvedMessages.findIndex(m => m.id === id);
+        
+        if (index === -1) {
+            return res.status(404).json({ ok: false, error: "Mensagem não encontrada nas aprovadas." });
+        }
+        
+        const [removida] = approvedMessages.splice(index, 1);
+        console.log(`✅ Mensagem aprovada removida: ${removida.nome}`);
+        emit();
+        res.json({ ok: true, message: "Mensagem removida das aprovadas." });
+    } catch (error) {
+        console.error("❌ Erro ao remover aprovada:", error);
+        res.status(500).json({ ok: false, error: error.message });
+    }
+});
+
 // BACKGROUND
 app.post("/api/background/upload", uploadMidia.single("background"), (req, res) => {
     if (!req.file) return res.status(400).json({ error: "Nenhum arquivo enviado" });
@@ -760,24 +802,44 @@ app.get("/uploads/:file", (req, res) => {
     res.sendFile(filePath);
 });
 
+// ============================================================
 // PÁGINAS
+// ============================================================
+
+// Página principal
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+// Página de configuração da enquete
 app.get("/enquete.html", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "enquete.html"));
 });
 
+// NOVO: Exibidor da Enquete (antes vmix.html)
+app.get("/enquete-exibidor.html", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "enquete-exibidor.html"));
+});
+
+// Redirecionar rota antiga para compatibilidade
 app.get("/vmix.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "vmix.html"));
+    res.redirect("/enquete-exibidor.html");
 });
 
+// Exibidor de Mensagens
+app.get("/exibidor.html", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "exibidor.html"));
+});
+
+// Redirecionar rota antiga do GT
 app.get("/vmix-gt.html", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "vmix-gt.html"));
+    res.redirect("/exibidor.html");
 });
 
+// ============================================================
 // SERVIDOR
+// ============================================================
+
 function iniciarServidor(porta) {
     const serverHttp = http.createServer(app);
 
@@ -792,9 +854,9 @@ function iniciarServidor(porta) {
         console.log(`📁 Dados do usuário em: ${zapmixDataPath}`);
 
         console.log(`\n📡 Para usar no vMix:`);
-        console.log(`   - Web Browser GT: http://localhost:${PORTA_ATUAL}/vmix-gt.html`);
-        console.log(`   - Web Browser Enquete: http://localhost:${PORTA_ATUAL}/vmix.html`);
-        console.log(`   - NDI: ZapMix - GT / ZapMix - Enquete`);
+        console.log(`   - Web Browser Exibidor de Mensagens: http://localhost:${PORTA_ATUAL}/exibidor.html`);
+        console.log(`   - Web Browser Exibidor de Enquete: http://localhost:${PORTA_ATUAL}/enquete-exibidor.html`);
+        console.log(`   - NDI: ZapMix - Exibidor de Mensagens / ZapMix - Enquete`);
 
         const portaFilePath = path.join(zapmixDataPath, "porta.txt");
         fs.writeFileSync(portaFilePath, String(PORTA_ATUAL));

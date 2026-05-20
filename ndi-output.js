@@ -8,7 +8,7 @@ const NDI_WIDTH = 1920;
 const NDI_HEIGHT = 1080;
 const FPS = 10;
 
-let ffmpegGT = null;
+let ffmpegExibidor = null;
 let ffmpegEnquete = null;
 let interval = null;
 let ativo = false;
@@ -186,12 +186,12 @@ function pararProcesso(proc) {
 
 }
 
-function reiniciarGT(audioUrl) {
+function reiniciarExibidor(audioUrl) {
 
-    pararProcesso(ffmpegGT);
+    pararProcesso(ffmpegExibidor);
 
-    ffmpegGT = criarProcessoNDI(
-        'ZapMix - GT',
+    ffmpegExibidor = criarProcessoNDI(
+        'ZapMix - Exibidor de Mensagens',
         true,
         audioUrl
     );
@@ -199,9 +199,9 @@ function reiniciarGT(audioUrl) {
     ultimoAudioUrl = audioUrl || null;
 
     if (audioUrl) {
-        console.log(`🔊 Áudio GT ativo: ${audioUrl}`);
+        console.log(`🔊 Áudio Exibidor ativo: ${audioUrl}`);
     } else {
-        console.log('🔇 GT sem áudio');
+        console.log('🔇 Exibidor sem áudio');
     }
 }
 
@@ -249,14 +249,14 @@ function escreverFrame(proc, buffer) {
 
 }
 
-function iniciarNDI({ gtWindow, enqueteWindow, porta }) {
+function iniciarNDI({ exibidorWindow, enqueteWindow, porta }) {
 
     if (ativo) return;
 
     portaServidor = porta || 3000;
 
-    ffmpegGT = criarProcessoNDI(
-        'ZapMix - GT',
+    ffmpegExibidor = criarProcessoNDI(
+        'ZapMix - Exibidor de Mensagens',
         true,
         null
     );
@@ -267,7 +267,7 @@ function iniciarNDI({ gtWindow, enqueteWindow, porta }) {
         null
     );
 
-    if (!ffmpegGT || !ffmpegEnquete) {
+    if (!ffmpegExibidor || !ffmpegEnquete) {
 
         console.log('⚠️ NDI não iniciado');
         return;
@@ -296,17 +296,17 @@ function iniciarNDI({ gtWindow, enqueteWindow, porta }) {
 
                 if (audioAtual !== ultimoAudioUrl) {
 
-                    reiniciarGT(audioAtual);
+                    reiniciarExibidor(audioAtual);
 
                 }
 
             }
 
-            const frameGT = await capturarFrame(gtWindow);
+            const frameExibidor = await capturarFrame(exibidorWindow);
 
             const frameEnquete = await capturarFrame(enqueteWindow);
 
-            escreverFrame(ffmpegGT, frameGT);
+            escreverFrame(ffmpegExibidor, frameExibidor);
 
             escreverFrame(ffmpegEnquete, frameEnquete);
 
@@ -319,7 +319,7 @@ function iniciarNDI({ gtWindow, enqueteWindow, porta }) {
     }, Math.round(1000 / FPS));
 
     console.log('🎬 NDI iniciado');
-    console.log('📡 Fontes: ZapMix - GT / ZapMix - Enquete');
+    console.log('📡 Fontes: ZapMix - Exibidor de Mensagens / ZapMix - Enquete');
 
 }
 
@@ -334,10 +334,10 @@ function pararNDI() {
 
     }
 
-    pararProcesso(ffmpegGT);
+    pararProcesso(ffmpegExibidor);
     pararProcesso(ffmpegEnquete);
 
-    ffmpegGT = null;
+    ffmpegExibidor = null;
     ffmpegEnquete = null;
     ultimoAudioUrl = null;
 

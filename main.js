@@ -1,5 +1,5 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
-const { autoUpdater } = require("electron-updater"); // ← APENAS UMA VEZ
+const { autoUpdater } = require("electron-updater");
 const path = require("path");
 const fs = require("fs");
 const http = require("http");
@@ -9,7 +9,7 @@ const { iniciarNDI, pararNDI } = require("./ndi-output");
 const { validarLicenca, verificarLicencaSalva } = require("./license-manager");
 
 let mainWindow;
-let gtWindow;
+let exibidorWindow;  // ANTES: gtWindow
 let enqueteWindow;
 let portaAtual = 3000;
 let ndiIniciado = false;
@@ -83,7 +83,7 @@ function criarJanelaPrincipal() {
 async function criarJanelasNDI() {
     if (ndiIniciado) return;
 
-    gtWindow = new BrowserWindow({
+    exibidorWindow = new BrowserWindow({  // ANTES: gtWindow
         width: 1920,
         height: 1080,
         show: false,
@@ -109,11 +109,12 @@ async function criarJanelasNDI() {
         }
     });
 
-    await gtWindow.loadURL(`http://localhost:${portaAtual}/vmix-gt.html`);
-    await enqueteWindow.loadURL(`http://localhost:${portaAtual}/vmix.html`);
+    // CARREGAR O NOVO ARQUIVO exibidor.html
+    await exibidorWindow.loadURL(`http://localhost:${portaAtual}/exibidor.html`);  // ANTES: vmix-gt.html
+	await enqueteWindow.loadURL(`http://localhost:${portaAtual}/enquete-exibidor.html`);
 
     ndiIniciado = true;
-    iniciarNDI({ gtWindow, enqueteWindow, porta: portaAtual });
+    iniciarNDI({ exibidorWindow, enqueteWindow, porta: portaAtual });  // ANTES: gtWindow
 }
 
 // ============================================================

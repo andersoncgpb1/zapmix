@@ -6,259 +6,1067 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" type="image/png" href="/media/favicon.png">
 <link rel="shortcut icon" href="/media/favicon.png">
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
-/* (mesmo estilo que você já tinha - não alterei) */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   background: #f1f5f9;
   background-image: linear-gradient(145deg, #f8fafc 0%, #eef2f6 100%);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: #1e293b;
   line-height: 1.5;
   padding-bottom: 40px;
 }
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
-::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #90d105; }
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #90d105;
+}
+
 header {
-  position: sticky; top: 0; z-index: 30;
-  display: flex; justify-content: space-between; align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 14px 32px;
-  background: rgba(255,255,255,0.92);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid #d1d5db;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
 }
-.logo-area { display: flex; align-items: center; gap: 14px; }
-.logo-img { height: 40px; width: auto; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.05)); transition: transform 0.2s ease; }
-.logo-img:hover { transform: scale(1.02); }
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-img {
+  height: 40px;
+  width: auto;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.05));
+  transition: transform 0.2s ease;
+}
+.logo-img:hover {
+  transform: scale(1.02);
+}
+
 .app-title {
-  font-size: 1.65rem; font-weight: 800;
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
   background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  background-clip: text; -webkit-background-clip: text; color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
-.app-sub { font-size: 0.68rem; color: #90d105; letter-spacing: 0.3px; margin-top: 2px; font-weight: 500; }
+.app-sub {
+  font-size: 0.68rem;
+  color: #90d105;
+  letter-spacing: 0.3px;
+  margin-top: 2px;
+  font-weight: 500;
+}
+
 .btn-voltar {
-  background: #f1f5f9; border: 1px solid #e2e8f0; padding: 8px 20px; border-radius: 32px;
-  font-weight: 600; font-size: 0.75rem; cursor: pointer; transition: 0.2s; color: #1e293b;
-  font-family: 'Inter', sans-serif; text-decoration: none;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 8px 20px;
+  border-radius: 32px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: 0.2s;
+  color: #1e293b;
+  font-family: 'Inter', sans-serif;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
-.btn-voltar:hover { transform: translateY(-1px); background: #ffffff; border-color: #90d105; }
-main { display: grid; grid-template-columns: 1fr; gap: 24px; padding: 32px; max-width: 1000px; margin: 0 auto; }
+.btn-voltar i {
+  font-size: 0.8rem;
+}
+.btn-voltar:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+  border-color: #90d105;
+}
+
+main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
 .card-white {
-  background: #ffffff; border-radius: 28px; padding: 24px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.05);
-  border: 1px solid #e9eef3; transition: all 0.2s;
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e9eef3;
+  transition: all 0.2s;
 }
-.card-white:hover { border-color: #cbd5e1; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+.card-white:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
 .section-header {
-  display: flex; align-items: baseline; justify-content: space-between;
-  margin-bottom: 20px; font-weight: 700; font-size: 1.25rem;
-  border-left: 4px solid #90d105; padding-left: 16px; color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  border-left: 4px solid #90d105;
+  padding-left: 16px;
+  color: #0f172a;
 }
-hr { border: none; height: 1px; background: linear-gradient(90deg, transparent, #cbd5e1, #cbd5e1, transparent); margin: 24px 0; }
-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #475569; margin-top: 14px; margin-bottom: 5px; display: block; }
+.section-header i {
+  font-size: 1.2rem;
+  color: #90d105;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #cbd5e1, #cbd5e1, transparent);
+  margin: 24px 0;
+}
+
+label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #475569;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  display: block;
+}
+label i {
+  margin-right: 4px;
+  font-size: 0.7rem;
+}
+
 input, textarea {
-  width: 100%; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 20px;
-  padding: 12px 16px; color: #0f172a; font-family: 'Inter', monospace; font-size: 0.85rem;
-  transition: 0.2s; outline: none;
+  width: 100%;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 20px;
+  padding: 12px 16px;
+  color: #0f172a;
+  font-family: 'Inter', monospace;
+  font-size: 0.85rem;
+  transition: 0.2s;
+  outline: none;
 }
-input:focus, textarea:focus { border-color: #90d105; box-shadow: 0 0 0 3px rgba(144,209,5,0.15); }
+input:focus, textarea:focus {
+  border-color: #90d105;
+  box-shadow: 0 0 0 3px rgba(144, 209, 5, 0.15);
+}
+
 button {
-  background: #f1f5f9; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 32px;
-  font-weight: 600; font-size: 0.75rem; cursor: pointer; transition: 0.2s; color: #1e293b;
-  margin-right: 8px; margin-top: 8px; font-family: 'Inter', sans-serif;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 32px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: 0.2s;
+  color: #1e293b;
+  margin-right: 8px;
+  margin-top: 8px;
+  font-family: 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
-button:hover { transform: translateY(-1px); background: #ffffff; border-color: #90d105; }
-button.primary-green { background: #90d105; color: #0f2e00; border-color: #7cb518; font-weight: 700; }
-button.yellow-warning { background: #fef3c7; color: #92400e; border-color: #fde68a; }
-button.red-danger { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
-.opcoes-container { margin-bottom: 20px; }
+button i {
+  font-size: 0.75rem;
+}
+button:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+  border-color: #90d105;
+}
+button:active {
+  transform: translateY(1px);
+}
+button.primary-green {
+  background: #90d105;
+  color: #0f2e00;
+  border-color: #7cb518;
+  font-weight: 700;
+}
+button.primary-green:hover {
+  background: #a0e015;
+}
+button.yellow-warning {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+}
+button.red-danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+button.blue-accent {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-color: #bae6fd;
+}
+button.full-width {
+  width: 100%;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.opcoes-container {
+  margin-bottom: 20px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
 .opcao-card {
-  background: #f8fafc; border-radius: 20px; padding: 16px; margin-bottom: 16px;
-  border: 1px solid #e2e8f0; transition: all 0.2s;
+  background: #f8fafc;
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s;
 }
-.opcao-card:hover { border-color: #90d105; }
+.opcao-card:hover {
+  border-color: #90d105;
+  box-shadow: 0 2px 8px rgba(144, 209, 5, 0.1);
+}
+
 .opcao-header-card {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
 }
-.opcao-numero { font-weight: 700; font-size: 0.9rem; color: #1e293b; }
-.btn-remover { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; margin: 0; }
-.btn-remover:hover { background: #fecaca; transform: translateY(-1px); }
-.opcao-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+
+.opcao-numero {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.opcao-numero i {
+  color: #90d105;
+}
+
+.btn-remover {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  margin: 0;
+}
+.btn-remover:hover {
+  background: #fecaca;
+  transform: translateY(-1px);
+}
+.btn-remover:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.opcao-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.painel-controle {
+  background: #f1f5f9;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .quantidade-select {
-  display: flex; align-items: center; gap: 15px; margin-bottom: 20px;
-  padding: 12px; background: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  padding: 6px 16px;
+  border-radius: 40px;
+  border: 1px solid #e2e8f0;
 }
-.quantidade-select label { margin: 0; text-transform: none; }
-.quantidade-select select { width: auto; padding: 8px 16px; background: white; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 0.85rem; }
+.quantidade-select label {
+  margin: 0;
+  text-transform: none;
+  font-size: 0.7rem;
+}
+.quantidade-select select {
+  width: auto;
+  padding: 6px 12px;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+
+.botoes-rapidos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 40px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.status-badge.ativa {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #90d105;
+}
+.status-badge.pausada {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
 .preview-box {
-  background: linear-gradient(115deg, #fefce8, #f8fafc); border-radius: 20px;
-  padding: 20px; margin-top: 20px; border: 1px solid #d9f0b0;
+  background: linear-gradient(115deg, #fefce8, #f8fafc);
+  border-radius: 24px;
+  padding: 24px;
+  border: 1px solid #d9f0b0;
+  margin-top: 20px;
 }
+
 .preview-pergunta {
-  text-align: center; padding: 12px; background: #ffffff; border-radius: 40px;
-  margin-bottom: 20px; font-weight: 600; font-size: 1rem; color: #1e293b; border: 1px solid #90d105;
+  text-align: center;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 40px;
+  margin-bottom: 24px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #1e293b;
+  border: 1px solid #90d105;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
-.preview-opcao { margin-bottom: 15px; }
-.preview-opcao-header { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #1e293b; }
-.preview-barra { height: 10px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
-.preview-progresso { height: 100%; border-radius: 10px; transition: width 0.3s ease; }
-.link-card { background: #0f172a; border-radius: 20px; padding: 16px; margin-top: 20px; text-align: center; }
-.link-card p { color: #94a3b8; font-size: 0.7rem; margin-bottom: 8px; }
-.link-card code { background: #1e293b; color: #90d105; padding: 8px 16px; border-radius: 40px; font-size: 0.8rem; display: inline-block; }
-.btn-copiar { background: #90d105; color: #0f2e00; border: none; padding: 6px 16px; border-radius: 30px; font-size: 0.7rem; margin-top: 8px; cursor: pointer; }
-.btn-copiar:hover { background: #a0e015; transform: translateY(-1px); }
-.footer-credits { text-align: center; margin-top: 20px; padding: 14px 24px; font-size: 0.7rem; color: #64748b; border-top: 1px solid #e2e8f0; background: #ffffffaa; backdrop-filter: blur(4px); border-radius: 60px; width: fit-content; margin-left: auto; margin-right: auto; }
-@media (max-width: 700px) {
-  main { padding: 20px; }
-  header { padding: 12px 20px; }
-  .logo-img { height: 34px; }
-  .app-title { font-size: 1.35rem; }
-  .opcao-row { grid-template-columns: 1fr; }
-  .quantidade-select { flex-direction: column; align-items: flex-start; }
+
+.preview-opcao {
+  margin-bottom: 18px;
+}
+
+.preview-opcao-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #1e293b;
+}
+
+.preview-barra {
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.preview-progresso {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.preview-total {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.75rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.link-card {
+  background: #0f172a;
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 24px;
+  text-align: center;
+}
+.link-card p {
+  color: #94a3b8;
+  font-size: 0.7rem;
+  margin-bottom: 8px;
+}
+.link-card p i {
+  margin-right: 4px;
+}
+.link-card code {
+  background: #1e293b;
+  color: #90d105;
+  padding: 8px 16px;
+  border-radius: 40px;
+  font-size: 0.8rem;
+  display: inline-block;
+  font-family: monospace;
+  word-break: break-all;
+}
+.btn-copiar {
+  background: #90d105;
+  color: #0f2e00;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-size: 0.7rem;
+  margin-top: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-copiar:hover {
+  background: #a0e015;
+  transform: translateY(-1px);
+}
+
+.toast-message {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #1e293b;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 40px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  z-index: 2001;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  transform: translateX(400px);
+  transition: transform 0.3s ease;
+}
+.toast-message.show {
+  transform: translateX(0);
+}
+.toast-message.success {
+  background: #15803d;
+  border-left: 4px solid #90d105;
+}
+.toast-message.error {
+  background: #991b1b;
+  border-left: 4px solid #f87171;
+}
+.toast-message.info {
+  background: #1e40af;
+  border-left: 4px solid #60a5fa;
+}
+.toast-message i {
+  font-size: 1rem;
+}
+
+/* ============================================
+   MODAL PERSONALIZADO ESTILO ELECTRON
+   ============================================ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+.modal-container {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 480px;
+  max-width: 90vw;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  transform: scale(0.95) translateY(10px);
+  transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  overflow: hidden;
+}
+.modal-overlay.active .modal-container {
+  transform: scale(1) translateY(0);
+}
+.modal-header {
+  padding: 20px 24px 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid #eef2f6;
+}
+.modal-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+.modal-icon.warning { background: #fef3c7; color: #d97706; }
+.modal-icon.danger { background: #fee2e2; color: #dc2626; }
+.modal-icon.success { background: #dcfce7; color: #16a34a; }
+.modal-icon.info { background: #dbeafe; color: #2563eb; }
+.modal-icon.question { background: #e0e7ff; color: #4f46e5; }
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -0.3px;
+}
+.modal-body {
+  padding: 24px;
+}
+.modal-message {
+  color: #334155;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+.modal-footer {
+  padding: 16px 24px 24px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: #fafcff;
+  border-top: 1px solid #eef2f6;
+}
+.modal-btn {
+  padding: 10px 24px;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.modal-btn-cancel {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+.modal-btn-cancel:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+}
+.modal-btn-confirm {
+  background: #90d105;
+  color: #0f2e00;
+  border: 1px solid #7cb518;
+}
+.modal-btn-confirm:hover {
+  background: #a0e015;
+  transform: translateY(-1px);
+}
+.modal-btn-danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+.modal-btn-danger:hover {
+  background: #fecaca;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 1000px) {
+  main {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 20px;
+  }
+  header {
+    padding: 12px 20px;
+  }
+  .logo-img {
+    height: 34px;
+  }
+  .app-title {
+    font-size: 1.35rem;
+  }
+  .opcao-row {
+    grid-template-columns: 1fr;
+  }
+  .painel-controle {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .quantidade-select {
+    justify-content: space-between;
+  }
+  .botoes-rapidos {
+    justify-content: center;
+  }
 }
 </style>
 </head>
 <body>
+
 <header>
   <div class="logo-area">
     <img class="logo-img" src="/media/logotipo.png" alt="ZapMix" onerror="this.style.display='none';">
-    <div><div class="app-title">ZapMix</div><div class="app-sub">Configurar Enquete</div></div>
+    <div>
+      <div class="app-title">ZapMix</div>
+      <div class="app-sub">Configurar Enquete</div>
+    </div>
   </div>
-  <button class="btn-voltar" onclick="window.location.href='/'">← Voltar ao WhatsApp</button>
+  <button class="btn-voltar" onclick="window.location.href='/'">
+    <i class="fas fa-arrow-left"></i> Voltar ao WhatsApp
+  </button>
 </header>
+
 <main>
+  <!-- COLUNA ESQUERDA - CONFIGURAÇÃO -->
   <div class="card-white">
-    <div class="section-header">⚙️ Configurar Enquete</div>
-    <label>📝 Pergunta da Enquete</label>
-    <input type="text" id="pergunta-input" placeholder="Ex: O que você mais gosta?" value="O que você mais gosta?">
-    <button class="primary-green" style="margin-top:8px;" onclick="salvarPergunta()">💾 Salvar Pergunta</button>
-    <hr>
-    <div class="quantidade-select">
-      <label>📊 Número de opções:</label>
-      <select id="quantidade-opcoes" onchange="alterarQuantidadeOpcoes()">
-        <option value="2">2 opções</option><option value="3" selected>3 opções</option>
-        <option value="4">4 opções</option><option value="5">5 opções</option><option value="6">6 opções</option>
-      </select>
+    <div class="section-header">
+      <i class="fas fa-chart-bar"></i> Configuração da Enquete
     </div>
+
+    <!-- Status -->
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+      <div id="status-badge" class="status-badge ativa">
+        <i class="fas fa-play-circle"></i> <span>Ativa</span>
+      </div>
+    </div>
+
+    <!-- Pergunta -->
+    <label><i class="fas fa-question-circle"></i> Pergunta da Enquete</label>
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+      <input type="text" id="pergunta-input" placeholder="Ex: O que você mais gosta?" value="O que você mais gosta?" style="flex: 1;">
+      <button class="primary-green" onclick="salvarPergunta()" style="margin-top: 0;"><i class="fas fa-save"></i> Salvar</button>
+    </div>
+
+    <hr>
+
+    <!-- Painel de controle rápido -->
+    <div class="painel-controle">
+      <div class="quantidade-select">
+        <label><i class="fas fa-list-ol"></i> Opções:</label>
+        <select id="quantidade-opcoes" onchange="alterarQuantidadeOpcoes()">
+          <option value="2">2</option>
+          <option value="3" selected>3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+      </div>
+      <div class="botoes-rapidos">
+        <button onclick="confirmarAdicionarOpcao()"><i class="fas fa-plus-circle"></i> Adicionar</button>
+        <button class="primary-green" onclick="salvarOpcoes()"><i class="fas fa-save"></i> Salvar</button>
+        <button id="toggle-btn" class="yellow-warning" onclick="confirmarToggleEnquete()"><i class="fas fa-pause-circle"></i> Pausar</button>
+        <button class="red-danger" onclick="confirmarResetarVotos()"><i class="fas fa-trash-alt"></i> Resetar Votos</button>
+        <button class="blue-accent" onclick="confirmarCarregarExemplo()"><i class="fas fa-chalkboard"></i> Exemplo</button>
+      </div>
+    </div>
+
+    <!-- Lista de opções -->
     <div id="opcoes-container" class="opcoes-container"></div>
-    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
-      <button class="primary-green" onclick="adicionarOpcao()">➕ Adicionar Opção</button>
-      <button class="primary-green" onclick="salvarOpcoes()">💾 Salvar Opções</button>
-      <button class="yellow-warning" id="toggle-btn" onclick="toggleEnquete()">⏸️ Pausar</button>
-      <button class="red-danger" onclick="resetarVotos()">🔄 Resetar Votos</button>
-    </div>
+
     <hr>
-    <div class="section-header">👁️ Preview da Enquete</div>
-    <div class="preview-box" id="preview-box">
-      <div class="preview-pergunta" id="preview-pergunta">O que você mais gosta?</div>
-      <div id="preview-opcoes"></div>
-    </div>
+
+    <!-- URL do vMix -->
     <div class="link-card">
-      <p>🔗 URL para colocar no vMix (Web Browser)</p>
+      <p><i class="fas fa-link"></i> URL para colocar no vMix (Web Browser)</p>
       <code id="vmix-url">carregando...</code>
-      <div><button class="btn-copiar" onclick="copiarLink()">📋 Copiar Link</button></div>
+      <div><button class="btn-copiar" onclick="copiarLink()"><i class="fas fa-copy"></i> Copiar Link</button></div>
+    </div>
+  </div>
+
+  <!-- COLUNA DIREITA - PRÉ-VISUALIZAÇÃO -->
+  <div class="card-white">
+    <div class="section-header">
+      <i class="fas fa-eye"></i> Pré-visualização
+    </div>
+    <div class="preview-box" id="preview-box">
+      <div class="preview-pergunta" id="preview-pergunta">
+        <i class="fas fa-question-circle"></i> <span>Carregando...</span>
+      </div>
+      <div id="preview-opcoes"></div>
+      <div id="preview-total" class="preview-total">
+        <i class="fas fa-users"></i> <span>Total de votos: 0</span>
+      </div>
     </div>
   </div>
 </main>
-<div class="footer-credits">Desenvolvido por Anderson Souza — ZapMix © 2026</div>
+
+<!-- MODAL PERSONALIZADO -->
+<div id="customModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header" id="modalHeader">
+      <div class="modal-icon" id="modalIcon"></div>
+      <div class="modal-title" id="modalTitle">Confirmação</div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-message" id="modalMessage">Deseja continuar?</div>
+    </div>
+    <div class="modal-footer" id="modalFooter">
+      <button class="modal-btn modal-btn-cancel" id="modalCancelBtn">Cancelar</button>
+      <button class="modal-btn modal-btn-confirm" id="modalConfirmBtn">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast-message"></div>
 
 <script>
-let opcoesAtuais = [];
-let perguntaAtual = "O que você mais gosta?";
+// ============================================================
+// MODAL PERSONALIZADO
+// ============================================================
+let modalResolve = null;
 
+function showModal(options) {
+  return new Promise((resolve) => {
+    modalResolve = resolve;
+    
+    const modal = document.getElementById('customModal');
+    const iconDiv = document.getElementById('modalIcon');
+    const title = document.getElementById('modalTitle');
+    const message = document.getElementById('modalMessage');
+    const cancelBtn = document.getElementById('modalCancelBtn');
+    const confirmBtn = document.getElementById('modalConfirmBtn');
+    
+    const type = options.type || 'question';
+    
+    const iconConfig = {
+      warning: { icon: '<i class="fas fa-exclamation-triangle"></i>', bg: 'warning' },
+      danger: { icon: '<i class="fas fa-trash-alt"></i>', bg: 'danger' },
+      success: { icon: '<i class="fas fa-check-circle"></i>', bg: 'success' },
+      info: { icon: '<i class="fas fa-info-circle"></i>', bg: 'info' },
+      question: { icon: '<i class="fas fa-question-circle"></i>', bg: 'question' }
+    };
+    
+    const config = iconConfig[type] || iconConfig.question;
+    iconDiv.innerHTML = config.icon;
+    iconDiv.className = `modal-icon ${config.bg}`;
+    
+    title.innerText = options.title || (type === 'danger' ? 'Exclusão' : type === 'warning' ? 'Atenção' : 'Confirmação');
+    message.innerText = options.message || 'Deseja continuar?';
+    
+    if (options.confirmText) {
+      confirmBtn.innerHTML = `<i class="fas ${type === 'danger' ? 'fa-trash-alt' : 'fa-check-circle'}"></i> ${options.confirmText}`;
+    } else {
+      confirmBtn.innerHTML = `<i class="fas ${type === 'danger' ? 'fa-trash-alt' : 'fa-check-circle'}"></i> ${type === 'danger' ? 'Excluir' : 'Confirmar'}`;
+    }
+    
+    if (options.cancelText) {
+      cancelBtn.innerHTML = `<i class="fas fa-times"></i> ${options.cancelText}`;
+    } else {
+      cancelBtn.innerHTML = `<i class="fas fa-times"></i> Cancelar`;
+    }
+    
+    if (type === 'danger') {
+      confirmBtn.className = 'modal-btn modal-btn-danger';
+    } else {
+      confirmBtn.className = 'modal-btn modal-btn-confirm';
+    }
+    
+    cancelBtn.className = 'modal-btn modal-btn-cancel';
+    cancelBtn.style.display = options.showCancel === false ? 'none' : 'inline-flex';
+    
+    const handleConfirm = () => { closeModal(); resolve(true); };
+    const handleCancel = () => { closeModal(); resolve(false); };
+    
+    confirmBtn.onclick = handleConfirm;
+    cancelBtn.onclick = handleCancel;
+    
+    modal.onclick = (e) => { if (e.target === modal) handleCancel(); };
+    
+    const escHandler = (e) => {
+      if (e.key === 'Escape') {
+        handleCancel();
+        document.removeEventListener('keydown', escHandler);
+      }
+    };
+    document.addEventListener('keydown', escHandler);
+    
+    modal.classList.add('active');
+  });
+}
+
+function closeModal() {
+  const modal = document.getElementById('customModal');
+  modal.classList.remove('active');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i> ${message}`;
+  toast.className = `toast-message ${type}`;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+// ============================================================
+// API HELPER
+// ============================================================
 async function api(path, options = {}) {
-  const res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...options });
+  const res = await fetch(path, {
+    headers: { "Content-Type": "application/json" },
+    ...options
+  });
   return res.json();
 }
-function getVmixUrl() { return window.location.origin + "/vmix.html"; }
-function copiarLink() { navigator.clipboard.writeText(getVmixUrl()).then(() => alert("✅ Link copiado: " + getVmixUrl())); }
 
+function getBaseUrl() { return window.location.origin; }
+function copiarLink() {
+  const url = document.getElementById('vmix-url').innerText;
+  navigator.clipboard.writeText(url).then(() => showToast('Link copiado!', 'success')).catch(() => showToast('Erro ao copiar', 'error'));
+}
+
+// ============================================================
+// ESTADO GLOBAL
+// ============================================================
+let opcoesAtuais = [];
+let enqueteAtiva = true;
+
+// ============================================================
+// CONFIRMAÇÕES COM MODAL
+// ============================================================
+async function confirmarResetarVotos() {
+  const confirmado = await showModal({
+    type: 'danger',
+    title: '⚠️ Resetar Votos',
+    message: 'Resetar todos os votos da enquete?\n\nEssa ação não pode ser desfeita.',
+    confirmText: 'Resetar'
+  });
+  if (confirmado) await resetarVotos();
+}
+
+async function confirmarToggleEnquete() {
+  const acao = enqueteAtiva ? 'pausar' : 'ativar';
+  const confirmado = await showModal({
+    type: 'warning',
+    title: enqueteAtiva ? '⏸️ Pausar Enquete' : '▶️ Ativar Enquete',
+    message: `Deseja ${acao} a enquete?\n\n${enqueteAtiva ? 'As mensagens recebidas não serão contabilizadas como votos.' : 'As mensagens recebidas voltarão a ser contabilizadas.'}`,
+    confirmText: enqueteAtiva ? 'Pausar' : 'Ativar'
+  });
+  if (confirmado) await toggleEnquete();
+}
+
+async function confirmarAdicionarOpcao() {
+  const confirmado = await showModal({
+    type: 'question',
+    title: '➕ Adicionar Opção',
+    message: 'Adicionar uma nova opção à enquete?\n\nLembre-se de clicar em "Salvar Opções" depois.',
+    confirmText: 'Adicionar'
+  });
+  if (confirmado) adicionarOpcao();
+}
+
+async function confirmarCarregarExemplo() {
+  const confirmado = await showModal({
+    type: 'info',
+    title: '📋 Carregar Exemplo',
+    message: 'Carregar exemplo de enquete?\n\nIsso substituirá as opções atuais.\n\nClique em "Salvar Opções" depois para aplicar.',
+    confirmText: 'Carregar'
+  });
+  if (confirmado) carregarExemplo();
+}
+
+// ============================================================
+// CARREGAR DADOS
+// ============================================================
 async function carregarPergunta() {
   try {
     const res = await fetch("/api/enquete/pergunta");
     const data = await res.json();
     if (data.pergunta) {
-      perguntaAtual = data.pergunta;
-      document.getElementById("pergunta-input").value = perguntaAtual;
-      document.getElementById("preview-pergunta").innerHTML = perguntaAtual;
+      document.getElementById("pergunta-input").value = data.pergunta;
+      document.querySelector("#preview-pergunta span").innerHTML = escapeHtml(data.pergunta);
     }
-  } catch(e) { console.log("Usando pergunta padrão"); }
+  } catch(e) { console.log("Erro ao carregar pergunta"); }
 }
+
 async function salvarPergunta() {
   const pergunta = document.getElementById("pergunta-input").value.trim();
-  if (!pergunta) { alert("Digite uma pergunta"); return; }
+  if (!pergunta) { showToast('Digite uma pergunta', 'error'); return; }
   await api("/api/enquete/pergunta", { method: "POST", body: JSON.stringify({ pergunta }) });
-  perguntaAtual = pergunta;
-  document.getElementById("preview-pergunta").innerHTML = pergunta;
-  alert("✅ Pergunta salva!");
+  document.querySelector("#preview-pergunta span").innerHTML = escapeHtml(pergunta);
+  showToast('✅ Pergunta salva!', 'success');
 }
+
 async function carregarOpcoes() {
-  const enquete = await api("/api/enquete");
-  if (enquete.opcoes && enquete.opcoes.length > 0) {
-    opcoesAtuais = enquete.opcoes.map(op => ({
-      id: op.id,
-      nome: op.nome,
-      cor: op.cor,
-      palavrasChave: op.palavrasChave || []
-    }));
-    document.getElementById("quantidade-opcoes").value = opcoesAtuais.length;
-  } else {
-    opcoesAtuais = [
-      { id: "opcao1", nome: "Opção 1", cor: "#ef4444", palavrasChave: [] },
-      { id: "opcao2", nome: "Opção 2", cor: "#f59e0b", palavrasChave: [] },
-      { id: "opcao3", nome: "Opção 3", cor: "#3b82f6", palavrasChave: [] }
-    ];
+  try {
+    const enquete = await api("/api/enquete");
+    enqueteAtiva = enquete.ativa;
+    
+    // Atualizar status badge
+    const statusBadge = document.getElementById("status-badge");
+    const toggleBtn = document.getElementById("toggle-btn");
+    if (enqueteAtiva) {
+      statusBadge.className = "status-badge ativa";
+      statusBadge.innerHTML = '<i class="fas fa-play-circle"></i> <span>Ativa</span>';
+      toggleBtn.innerHTML = '<i class="fas fa-pause-circle"></i> Pausar';
+      toggleBtn.className = "yellow-warning";
+    } else {
+      statusBadge.className = "status-badge pausada";
+      statusBadge.innerHTML = '<i class="fas fa-pause-circle"></i> <span>Pausada</span>';
+      toggleBtn.innerHTML = '<i class="fas fa-play-circle"></i> Ativar';
+      toggleBtn.className = "primary-green";
+    }
+    
+    if (enquete.opcoes && enquete.opcoes.length > 0) {
+      opcoesAtuais = enquete.opcoes.map(op => ({
+        id: op.id,
+        nome: op.nome,
+        cor: op.cor,
+        palavrasChave: op.palavrasChave || []
+      }));
+      document.getElementById("quantidade-opcoes").value = opcoesAtuais.length;
+    } else {
+      opcoesAtuais = [
+        { id: "opcao1", nome: "Opção 1", cor: "#ef4444", palavrasChave: [] },
+        { id: "opcao2", nome: "Opção 2", cor: "#f59e0b", palavrasChave: [] },
+        { id: "opcao3", nome: "Opção 3", cor: "#3b82f6", palavrasChave: [] }
+      ];
+    }
+    renderizarFormularioOpcoes();
+    await carregarPreview();
+  } catch(e) {
+    console.error("Erro ao carregar opções:", e);
   }
-  renderizarFormularioOpcoes();
-  await carregarPreview();
-  const toggleBtn = document.getElementById("toggle-btn");
-  toggleBtn.textContent = enquete.ativa ? "⏸️ Pausar Enquete" : "▶️ Ativar Enquete";
-  toggleBtn.className = enquete.ativa ? "yellow-warning" : "primary-green";
 }
+
 function renderizarFormularioOpcoes() {
   const container = document.getElementById("opcoes-container");
-  const cores = ["#ef4444","#f59e0b","#3b82f6","#10b981","#8b5cf6","#ec4899"];
+  const cores = ["#ef4444", "#f59e0b", "#3b82f6", "#10b981", "#8b5cf6", "#ec4899", "#06b6d4", "#f97316"];
+  
   container.innerHTML = opcoesAtuais.map((op, index) => `
     <div class="opcao-card" data-index="${index}">
       <div class="opcao-header-card">
-        <span class="opcao-numero">🔹 Opção ${index+1}</span>
-        <button class="btn-remover" onclick="removerOpcao(${index})" ${opcoesAtuais.length<=2 ? 'disabled style="opacity:0.5"' : ''}>✖ Remover</button>
+        <span class="opcao-numero">
+          <i class="fas fa-chart-simple"></i> Opção ${index + 1}
+        </span>
+        <button class="btn-remover" onclick="removerOpcao(${index})" ${opcoesAtuais.length <= 2 ? 'disabled style="opacity:0.5"' : ''}>
+          <i class="fas fa-trash-alt"></i> Remover
+        </button>
       </div>
       <div class="opcao-row">
-        <div><label>Nome (exibido)</label><input type="text" class="opcao-nome-input" value="${escapeHtml(op.nome)}" placeholder="Ex: Coração"></div>
-        <div><label>ID (identificador)</label><input type="text" class="opcao-id-input" value="${escapeHtml(op.id)}" placeholder="ex: coracao"></div>
+        <div>
+          <label><i class="fas fa-tag"></i> Nome (exibido)</label>
+          <input type="text" class="opcao-nome-input" value="${escapeHtml(op.nome)}" placeholder="Ex: Coração">
+        </div>
+        <div>
+          <label><i class="fas fa-fingerprint"></i> ID (identificador)</label>
+          <input type="text" class="opcao-id-input" value="${escapeHtml(op.id)}" placeholder="ex: coracao">
+        </div>
       </div>
       <div class="opcao-row">
-        <div><label>Cor</label><input type="color" class="opcao-cor-input" value="${op.cor || cores[index%cores.length]}"></div>
-        <div><label>Palavras-chave (separadas por vírgula)</label><input type="text" class="opcao-palavras-input" value="${escapeHtml(op.palavrasChave ? op.palavrasChave.join(', ') : '')}" placeholder="ex: coração, coracao, cardio"></div>
+        <div>
+          <label><i class="fas fa-palette"></i> Cor</label>
+          <input type="color" class="opcao-cor-input" value="${op.cor || cores[index % cores.length]}">
+        </div>
+        <div>
+          <label><i class="fas fa-keyboard"></i> Palavras-chave (vírgula)</label>
+          <input type="text" class="opcao-palavras-input" value="${escapeHtml(op.palavrasChave ? op.palavrasChave.join(', ') : '')}" placeholder="ex: coração, coracao">
+        </div>
       </div>
     </div>
   `).join("");
 }
+
 function adicionarOpcao() {
-  const novoId = `opcao${opcoesAtuais.length+1}`;
-  opcoesAtuais.push({ id: novoId, nome: `Opção ${opcoesAtuais.length+1}`, cor: "#90d105", palavrasChave: [] });
+  const novoId = `opcao${opcoesAtuais.length + 1}`;
+  opcoesAtuais.push({
+    id: novoId,
+    nome: `Opção ${opcoesAtuais.length + 1}`,
+    cor: "#90d105",
+    palavrasChave: []
+  });
   renderizarFormularioOpcoes();
+  showToast('✅ Nova opção adicionada! Clique em "Salvar Opções" para confirmar.', 'success');
 }
+
 function removerOpcao(index) {
-  if (opcoesAtuais.length <= 2) { alert("Mínimo de 2 opções"); return; }
-  opcoesAtuais.splice(index,1);
+  if (opcoesAtuais.length <= 2) { showToast('Mínimo de 2 opções', 'error'); return; }
+  opcoesAtuais.splice(index, 1);
   renderizarFormularioOpcoes();
+  showToast('✅ Opção removida! Clique em "Salvar Opções" para confirmar.', 'success');
 }
+
 function alterarQuantidadeOpcoes() {
   const qtd = parseInt(document.getElementById("quantidade-opcoes").value);
   while (opcoesAtuais.length < qtd) {
-    const idx = opcoesAtuais.length+1;
+    const idx = opcoesAtuais.length + 1;
     opcoesAtuais.push({ id: `opcao${idx}`, nome: `Opção ${idx}`, cor: "#90d105", palavrasChave: [] });
   }
   while (opcoesAtuais.length > qtd) opcoesAtuais.pop();
   renderizarFormularioOpcoes();
+  showToast('✅ Quantidade alterada! Clique em "Salvar Opções" para confirmar.', 'info');
 }
+
 function coletarOpcoesFormulario() {
   const opcoes = [];
   document.querySelectorAll(".opcao-card").forEach((card, idx) => {
@@ -268,8 +1076,8 @@ function coletarOpcoesFormulario() {
     const palavrasInput = card.querySelector(".opcao-palavras-input");
     const palavrasChave = palavrasInput ? palavrasInput.value.split(',').map(p => p.trim().toLowerCase()).filter(p => p) : [];
     opcoes.push({
-      id: idInput ? idInput.value.trim() || `opcao${idx+1}` : `opcao${idx+1}`,
-      nome: nomeInput ? nomeInput.value.trim() || `Opção ${idx+1}` : `Opção ${idx+1}`,
+      id: idInput ? idInput.value.trim() || `opcao${idx + 1}` : `opcao${idx + 1}`,
+      nome: nomeInput ? nomeInput.value.trim() || `Opção ${idx + 1}` : `Opção ${idx + 1}`,
       cor: corInput ? corInput.value : "#90d105",
       votos: 0,
       palavrasChave: palavrasChave
@@ -277,45 +1085,81 @@ function coletarOpcoesFormulario() {
   });
   return opcoes;
 }
+
 async function salvarOpcoes() {
   const opcoes = coletarOpcoesFormulario();
-  if (opcoes.length < 2) { alert("Mínimo de 2 opções"); return; }
+  if (opcoes.length < 2) { showToast('Mínimo de 2 opções', 'error'); return; }
   await api("/api/enquete/opcoes", { method: "POST", body: JSON.stringify({ opcoes }) });
-  alert(`✅ ${opcoes.length} opções salvas!`);
+  showToast(`✅ ${opcoes.length} opções salvas!`, 'success');
   await carregarPreview();
 }
+
 async function carregarPreview() {
   try {
     const enquete = await api("/api/enquete");
     const container = document.getElementById("preview-opcoes");
+    const totalSpan = document.querySelector("#preview-total span");
+    
     if (!enquete.opcoes || enquete.opcoes.length === 0) {
-      container.innerHTML = '<div style="text-align:center; padding:20px;">Nenhuma opção configurada</div>';
+      container.innerHTML = '<div style="text-align:center; padding:20px;"><i class="fas fa-info-circle"></i> Nenhuma opção configurada</div>';
+      if (totalSpan) totalSpan.innerText = "0";
       return;
     }
+    
+    const totalVotos = enquete.totalVotos || 0;
+    if (totalSpan) totalSpan.innerText = totalVotos;
+    
     container.innerHTML = enquete.opcoes.map(op => `
       <div class="preview-opcao">
-        <div class="preview-opcao-header"><span>${escapeHtml(op.nome)}</span><span>${op.porcentagem||0}%</span></div>
-        <div class="preview-barra"><div class="preview-progresso" style="width: ${op.porcentagem||0}%; background: ${op.cor}; height:100%;"></div></div>
+        <div class="preview-opcao-header">
+          <span><i class="fas fa-circle" style="color: ${op.cor}; font-size: 0.7rem;"></i> ${escapeHtml(op.nome)}</span>
+          <span><strong>${op.porcentagem || 0}%</strong> (${op.votos || 0})</span>
+        </div>
+        <div class="preview-barra">
+          <div class="preview-progresso" style="width: ${op.porcentagem || 0}%; background: ${op.cor};"></div>
+        </div>
       </div>
     `).join("");
   } catch(e) { console.log("Erro preview:", e); }
 }
+
 async function resetarVotos() {
-  if (confirm("Resetar todos os votos?")) { await api("/api/enquete/resetar", { method: "POST" }); await carregarPreview(); alert("Votos resetados!"); }
+  await api("/api/enquete/resetar", { method: "POST" });
+  await carregarPreview();
+  showToast('✅ Votos resetados!', 'success');
 }
+
 async function toggleEnquete() {
   await api("/api/enquete/toggle", { method: "POST" });
-  const enquete = await api("/api/enquete");
-  const toggleBtn = document.getElementById("toggle-btn");
-  toggleBtn.textContent = enquete.ativa ? "⏸️ Pausar Enquete" : "▶️ Ativar Enquete";
-  toggleBtn.className = enquete.ativa ? "yellow-warning" : "primary-green";
+  await carregarOpcoes();
   await carregarPreview();
+  showToast(enqueteAtiva ? '✅ Enquete ativada!' : '⏸️ Enquete pausada!', 'success');
 }
-function escapeHtml(str) { if (!str) return ""; return str.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m] || m)); }
-document.getElementById("vmix-url").textContent = getVmixUrl();
+
+function carregarExemplo() {
+  opcoesAtuais = [
+    { id: "otimo", nome: "Excelente! 😍", cor: "#10b981", palavrasChave: ["otimo", "excelente", "bom", "maravilha"] },
+    { id: "regular", nome: "Mais ou menos 😐", cor: "#f59e0b", palavrasChave: ["regular", "normal", "medio"] },
+    { id: "ruim", nome: "Precisa melhorar 😞", cor: "#ef4444", palavrasChave: ["ruim", "pessimo", "horrivel"] },
+    { id: "naovotou", nome: "Não votou", cor: "#94a3b8", palavrasChave: [] }
+  ];
+  renderizarFormularioOpcoes();
+  document.getElementById("quantidade-opcoes").value = "4";
+  showToast('📋 Exemplo carregado! Clique em "Salvar Opções" para aplicar.', 'info');
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str).replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m] || m));
+}
+
+// ============================================================
+// INICIALIZAÇÃO
+// ============================================================
+document.getElementById("vmix-url").innerText = getBaseUrl() + "/enquete-exibidor.html";
 carregarPergunta();
 carregarOpcoes();
-setInterval(carregarPreview, 3000);
+setInterval(carregarPreview, 5000);
 </script>
 </body>
 </html>

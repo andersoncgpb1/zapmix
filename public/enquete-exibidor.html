@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>ZapMix — Exibidor de Enquete</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/png" href="/media/favicon.png">
+<link rel="shortcut icon" href="/media/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  width: 100%;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  transition: background 0.5s ease-in-out;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 0;
+  backdrop-filter: blur(2px);
+}
+
+.enquete-container {
+  position: relative;
+  z-index: 2;
+  width: 1400px;
+  max-width: 92vw;
+  height: auto;
+  max-height: 90vh;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 56px;
+  padding: 48px 56px;
+  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(144, 209, 5, 0.2);
+  backdrop-filter: blur(12px);
+  animation: fadeInUp 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Scroll */
+.enquete-container::-webkit-scrollbar {
+  width: 8px;
+}
+.enquete-container::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 10px;
+  margin: 10px;
+}
+.enquete-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #90d105, #6a9e05);
+  border-radius: 10px;
+}
+.enquete-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #a0e015, #7cb518);
+}
+
+/* Título */
+.enquete-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.enquete-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.enquete-titulo h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #1e293b, #334155);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.enquete-titulo i {
+  font-size: 2rem;
+  background: linear-gradient(135deg, #90d105, #6a9e05);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Pergunta */
+.enquete-pergunta {
+  text-align: center;
+  margin-bottom: 48px;
+  padding: 20px 28px;
+  background: linear-gradient(115deg, #ffffff, #fefce8);
+  border-radius: 60px;
+  border: 2px solid #90d105;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1e293b;
+  word-wrap: break-word;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Opções - APENAS PORCENTAGEM, SEM VOTOS */
+.opcoes-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.opcao {
+  margin-bottom: 32px;
+  transition: transform 0.2s;
+}
+
+.opcao:hover {
+  transform: translateX(4px);
+}
+
+.opcao-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #1e293b;
+}
+
+.opcao-header .opcao-nome {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.opcao-header .opcao-nome i {
+  font-size: 1rem;
+  color: #90d105;
+}
+
+.opcao-header .opcao-porcentagem {
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: #1e293b;
+}
+
+.barra-container {
+  background: #e2e8f0;
+  border-radius: 60px;
+  height: 52px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progresso {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 24px;
+  color: white;
+  font-weight: 800;
+  font-size: 1.1rem;
+  transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-radius: 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progresso::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.15) 100%);
+  pointer-events: none;
+}
+
+/* Mensagem para enquete vazia */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.empty-state i {
+  font-size: 4rem;
+  color: #cbd5e1;
+  margin-bottom: 20px;
+}
+
+.empty-state h3 {
+  font-size: 1.3rem;
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  color: #64748b;
+}
+
+/* Loading */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 40px;
+}
+
+.loading-spinner i {
+  font-size: 2rem;
+  color: #90d105;
+}
+
+/* Rodapé simplificado (sem instruções de voto) */
+.enquete-footer {
+  text-align: center;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+/* Animações */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.opcao {
+  animation: slideIn 0.3s ease forwards;
+}
+
+/* Responsivo */
+@media (max-width: 900px) {
+  .enquete-container {
+    padding: 28px 32px;
+    border-radius: 40px;
+  }
+  
+  .enquete-titulo h1 {
+    font-size: 1.5rem;
+  }
+  
+  .enquete-pergunta {
+    font-size: 1rem;
+    padding: 16px 20px;
+    margin-bottom: 32px;
+  }
+  
+  .opcao-header {
+    font-size: 1rem;
+  }
+  
+  .opcao-header .opcao-porcentagem {
+    font-size: 1rem;
+  }
+  
+  .barra-container {
+    height: 42px;
+  }
+  
+  .progresso {
+    font-size: 0.9rem;
+    padding-right: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .enquete-container {
+    padding: 20px 24px;
+  }
+  
+  .enquete-titulo h1 {
+    font-size: 1.2rem;
+  }
+  
+  .opcao {
+    margin-bottom: 20px;
+  }
+  
+  .barra-container {
+    height: 36px;
+  }
+  
+  .progresso {
+    font-size: 0.8rem;
+    padding-right: 12px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="enquete-container">
+  <div class="enquete-header">
+    <div class="enquete-titulo">
+      <i class="fas fa-chart-simple"></i>
+      <h1>ENQUETE</h1>
+    </div>
+  </div>
+  
+  <div id="pergunta-container" class="enquete-pergunta">
+    <i class="fas fa-spinner fa-pulse"></i> Carregando...
+  </div>
+  
+  <div class="opcoes-wrapper" id="opcoes-wrapper">
+    <div id="opcoes">
+      <div class="loading-spinner">
+        <i class="fas fa-spinner fa-pulse"></i> Carregando opções...
+      </div>
+    </div>
+  </div>
+  
+  <div class="enquete-footer">
+    <i class="fas fa-chart-line"></i> Resultado parcial
+  </div>
+</div>
+
+<script>
+let lastData = null;
+
+async function carregarBackground() {
+  try {
+    const res = await fetch("/api/background/get");
+    const bg = await res.json();
+    const body = document.body;
+    
+    if (bg.type === "default") {
+      body.style.background = "linear-gradient(135deg, #0f172a, #1e293b)";
+      body.style.backgroundImage = "none";
+    } else if (bg.type === "custom" && bg.imageUrl) {
+      body.style.backgroundImage = `url('${bg.imageUrl}')`;
+      body.style.backgroundSize = "cover";
+      body.style.backgroundPosition = "center";
+    } else if (bg.type === "dark") {
+      body.style.background = "#0a0a0a";
+      body.style.backgroundImage = "none";
+    } else if (bg.type === "light") {
+      body.style.background = "#f8fafc";
+      body.style.backgroundImage = "none";
+    }
+  } catch (error) {
+    console.error("Erro ao carregar background:", error);
+  }
+}
+
+async function carregarEnquete() {
+  try {
+    const res = await fetch("/api/enquete");
+    const data = await res.json();
+    renderizarEnquete(data);
+  } catch (error) {
+    console.error("Erro ao carregar enquete:", error);
+    document.getElementById("opcoes").innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h3>Erro ao carregar enquete</h3>
+        <p>Verifique a conexão com o servidor</p>
+      </div>
+    `;
+  }
+}
+
+function renderizarEnquete(data) {
+  // Atualizar pergunta
+  const perguntaContainer = document.getElementById("pergunta-container");
+  if (data.pergunta && data.pergunta.trim() !== "") {
+    perguntaContainer.innerHTML = `<i class="fas fa-question-circle" style="margin-right: 10px; color:#90d105;"></i> ${escapeHtml(data.pergunta)}`;
+  } else {
+    perguntaContainer.innerHTML = `<i class="fas fa-question-circle" style="margin-right: 10px; color:#90d105;"></i> Aguardando configuração da enquete...`;
+  }
+  
+  const container = document.getElementById("opcoes");
+  if (!data.opcoes || data.opcoes.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-chart-simple"></i>
+        <h3>Nenhuma opção configurada</h3>
+        <p>Configure as opções da enquete no painel de controle</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // Gerar HTML com APENAS porcentagem (sem contagem de votos)
+  const newHtml = data.opcoes.map((op, idx) => {
+    const porcentagem = op.porcentagem || 0;
+    const cor = op.cor || "#90d105";
+    
+    return `
+      <div class="opcao" data-opcao-id="${escapeHtml(op.id)}">
+        <div class="opcao-header">
+          <div class="opcao-nome">
+            <i class="fas fa-circle" style="color: ${cor}; font-size: 0.8rem;"></i>
+            ${escapeHtml(op.nome)}
+          </div>
+          <div class="opcao-porcentagem">
+            ${porcentagem}%
+          </div>
+        </div>
+        <div class="barra-container">
+          <div class="progresso" style="width: ${porcentagem}%; background: linear-gradient(95deg, ${cor}, ${adjustColor(cor, -15)});">
+            ${porcentagem > 15 ? porcentagem + '%' : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+  
+  // Transição suave
+  container.style.opacity = "0";
+  setTimeout(() => {
+    container.innerHTML = newHtml;
+    container.style.opacity = "1";
+  }, 150);
+  container.style.transition = "opacity 0.2s ease";
+  container.style.opacity = "1";
+  
+  lastData = data;
+}
+
+function adjustColor(color, percent) {
+  if (color.startsWith('#')) {
+    const num = parseInt(color.slice(1), 16);
+    const r = Math.min(255, Math.max(0, (num >> 16) + percent));
+    const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + percent));
+    const b = Math.min(255, Math.max(0, (num & 0x0000FF) + percent));
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+  }
+  return color;
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str).replace(/[&<>]/g, m => {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    if (m === '"') return '&quot;';
+    if (m === "'") return '&#39;';
+    return m;
+  });
+}
+
+async function atualizarDados() {
+  try {
+    const res = await fetch("/api/enquete");
+    const data = await res.json();
+    const hasChanges = JSON.stringify(lastData) !== JSON.stringify(data);
+    if (hasChanges || !lastData) {
+      renderizarEnquete(data);
+    }
+  } catch (e) {
+    console.error("Erro na atualização:", e);
+  }
+}
+
+// Inicialização
+carregarBackground();
+carregarEnquete();
+
+// Atualização periódica
+setInterval(() => {
+  carregarBackground();
+  atualizarDados();
+}, 3000);
+
+// WebSocket para atualizações em tempo real
+try {
+  const socket = io();
+  if (socket) {
+    socket.on("enquete:update", () => {
+      atualizarDados();
+    });
+    socket.on("connect", () => {
+      console.log("Socket conectado - enquete em tempo real");
+    });
+  }
+} catch(e) {
+  console.log("WebSocket não disponível, usando polling");
+}
+
+// Evento de visibilidade
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    atualizarDados();
+    carregarBackground();
+  }
+});
+</script>
+</body>
+</html>

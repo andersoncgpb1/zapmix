@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>ZapMix — Exibidor de Mensagens</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/png" href="/media/favicon.png">
+<link rel="shortcut icon" href="/media/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  width: 100%;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 0;
+  backdrop-filter: blur(2px);
+  transition: all 0.3s ease;
+}
+
+/* Container principal */
+.exibidor-container {
+  position: relative;
+  z-index: 2;
+  width: 1500px;
+  max-width: 95vw;
+  height: 880px;
+  max-height: 92vh;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 56px;
+  padding: 40px 48px;
+  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(144, 209, 5, 0.2);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+
+/* Scrollbar elegante */
+.exibidor-container::-webkit-scrollbar {
+  width: 8px;
+}
+.exibidor-container::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 10px;
+  margin: 10px;
+}
+.exibidor-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #90d105, #6a9e05);
+  border-radius: 10px;
+}
+.exibidor-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #a0e015, #7cb518);
+}
+
+/* Animações */
+@keyframes fadeOutUp {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-40px) scale(0.96); }
+}
+
+@keyframes fadeInDown {
+  0% { opacity: 0; transform: translateY(40px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes slideOutLeft {
+  0% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(-60px); }
+}
+
+@keyframes slideInRight {
+  0% { opacity: 0; transform: translateX(60px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(144, 209, 5, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(144, 209, 5, 0); }
+}
+
+.animate-out-up {
+  animation: fadeOutUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+}
+
+.animate-in-down {
+  animation: fadeInDown 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards !important;
+}
+
+.animate-out-left {
+  animation: slideOutLeft 0.4s ease-out forwards !important;
+}
+
+.animate-in-right {
+  animation: slideInRight 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards !important;
+}
+
+/* Indicador de transição */
+.transition-indicator {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  color: #90d105;
+  padding: 8px 18px;
+  border-radius: 40px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(20px);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(144, 209, 5, 0.3);
+}
+.transition-indicator.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+.transition-indicator i {
+  animation: rotate 0.8s linear infinite;
+}
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Cabeçalho */
+.exibidor-header {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid rgba(144, 209, 5, 0.25);
+  flex-wrap: wrap;
+}
+
+.exibidor-avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #90d105;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+.exibidor-avatar:hover {
+  transform: scale(1.05);
+}
+
+.exibidor-avatar-placeholder {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #90d105, #6a9e05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.2);
+}
+.exibidor-avatar-placeholder i {
+  font-size: 3rem;
+  color: white;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.exibidor-info {
+  flex: 1;
+}
+
+.exibidor-nome {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #1e293b, #334155);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  word-break: break-word;
+}
+
+.exibidor-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #dcfce7;
+  padding: 4px 12px;
+  border-radius: 30px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #15803d;
+  margin-top: 8px;
+}
+
+/* Mensagem */
+.exibidor-mensagem {
+  background: linear-gradient(115deg, #f8fafc, #ffffff);
+  border-radius: 32px;
+  padding: 32px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(144, 209, 5, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.exibidor-mensagem.with-media {
+  padding: 20px 28px;
+}
+
+.exibidor-mensagem.only-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 380px;
+  background: linear-gradient(115deg, #ffffff, #fefce8);
+  border: 2px solid rgba(144, 209, 5, 0.3);
+}
+
+.exibidor-mensagem-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #90d105;
+  margin-bottom: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.exibidor-mensagem-texto {
+  color: #0f172a;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-y: auto;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.exibidor-mensagem.only-text .exibidor-mensagem-texto {
+  font-size: 2rem;
+  font-weight: 700;
+  max-height: none;
+  text-align: center;
+}
+
+.exibidor-mensagem.with-media .exibidor-mensagem-texto {
+  font-size: 1.1rem;
+  font-weight: 500;
+  max-height: 180px;
+}
+
+/* Player de Vídeo */
+.video-player-card {
+  margin-top: 20px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #0f172a;
+  box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.3);
+}
+
+.video-wrapper {
+  position: relative;
+  background: #000;
+}
+
+.video-wrapper video {
+  width: 100%;
+  max-height: 420px;
+  background: #000;
+  outline: none;
+  display: block;
+  object-fit: contain;
+}
+
+.video-controls {
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.video-controls button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 40px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(4px);
+}
+
+.video-controls button:hover {
+  background: #90d105;
+  color: #0f2e00;
+  transform: translateY(-2px);
+}
+
+.video-progress-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.video-progress-fill {
+  height: 100%;
+  background: #90d105;
+  border-radius: 4px;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+.video-time {
+  color: white;
+  font-size: 0.7rem;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+
+/* Player de Áudio */
+.audio-player-card {
+  margin-top: 20px;
+  background: linear-gradient(115deg, #f8fafc, #ffffff);
+  border-radius: 60px;
+  padding: 20px 28px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(144, 209, 5, 0.2);
+}
+
+.audio-visualizer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 70px;
+  margin-bottom: 20px;
+}
+
+.audio-visualizer .wave-bar {
+  width: 5px;
+  background: linear-gradient(135deg, #90d105, #6a9e05);
+  border-radius: 3px;
+  transition: height 0.08s ease;
+  animation: soundWave 0.8s ease-in-out infinite;
+}
+
+@keyframes soundWave {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+
+.audio-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.audio-controls button {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 40px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.audio-controls button:hover {
+  background: #90d105;
+  color: #0f2e00;
+  transform: translateY(-2px);
+}
+
+.audio-time {
+  color: #64748b;
+  font-size: 0.8rem;
+  font-family: monospace;
+  font-weight: 600;
+  background: #f1f5f9;
+  padding: 6px 14px;
+  border-radius: 40px;
+}
+
+.native-audio {
+  display: none;
+}
+
+/* Imagem */
+.image-card {
+  margin-top: 20px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #f8fafc;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.image-card img {
+  max-width: 100%;
+  max-height: 450px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  transition: transform 0.3s ease;
+}
+.image-card img:hover {
+  transform: scale(1.02);
+}
+
+/* Estado vazio */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.empty-state-icon {
+  font-size: 5rem;
+  color: #cbd5e1;
+  margin-bottom: 24px;
+  animation: pulseGlow 2s infinite;
+}
+
+.empty-state h3 {
+  font-size: 1.6rem;
+  color: #1e293b;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.empty-state p {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .exibidor-container {
+    padding: 24px 28px;
+    border-radius: 40px;
+  }
+  .exibidor-nome {
+    font-size: 1.5rem;
+  }
+  .exibidor-avatar, .exibidor-avatar-placeholder {
+    width: 80px;
+    height: 80px;
+  }
+  .exibidor-mensagem.only-text .exibidor-mensagem-texto {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .exibidor-container {
+    padding: 20px;
+  }
+  .exibidor-header {
+    gap: 16px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="exibidor-container" id="exibidor-container">
+  <div id="dynamic-content" class="dynamic-content-wrapper">
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <i class="fas fa-tv"></i>
+      </div>
+      <h3>Aguardando Conteúdo</h3>
+      <p>Aprove uma mensagem e clique em "Colocar NO AR"<br>para exibir aqui no vMix</p>
+    </div>
+  </div>
+</div>
+
+<div id="transition-indicator" class="transition-indicator">
+  <i class="fas fa-sync-alt"></i> <span>Atualizando conteúdo</span>
+</div>
+
+<script>
+let currentVideo = null;
+let currentAudio = null;
+let progressInterval = null;
+let isTransitioning = false;
+let ultimaMensagemId = null;
+let animationTimeout = null;
+
+async function carregarBackground() {
+  try {
+    const res = await fetch("/api/background/get");
+    const bg = await res.json();
+    const body = document.body;
+    
+    switch(bg.type) {
+      case "default":
+        body.style.background = "linear-gradient(135deg, #0f172a, #1e293b)";
+        body.style.backgroundImage = "none";
+        break;
+      case "custom":
+        if (bg.imageUrl) {
+          body.style.backgroundImage = `url('${bg.imageUrl}')`;
+          body.style.backgroundSize = "cover";
+          body.style.backgroundPosition = "center";
+        }
+        break;
+      case "dark":
+        body.style.background = "#0a0a0a";
+        body.style.backgroundImage = "none";
+        break;
+      case "light":
+        body.style.background = "#f8fafc";
+        body.style.backgroundImage = "none";
+        break;
+    }
+  } catch (error) {
+    console.error("Erro ao carregar background:", error);
+  }
+}
+
+function mostrarIndicador() {
+  const indicator = document.getElementById("transition-indicator");
+  indicator.classList.add("active");
+  if (animationTimeout) clearTimeout(animationTimeout);
+  animationTimeout = setTimeout(() => {
+    indicator.classList.remove("active");
+  }, 1200);
+}
+
+function aplicarAnimacaoSaida(elemento, callback) {
+  if (!elemento) {
+    if (callback) callback();
+    return;
+  }
+  
+  const animacoes = ['animate-out-up', 'animate-out-left'];
+  const animacao = animacoes[Math.floor(Math.random() * animacoes.length)];
+  
+  elemento.style.animation = 'none';
+  elemento.offsetHeight;
+  elemento.classList.add(animacao);
+  
+  setTimeout(() => {
+    elemento.classList.remove(animacao);
+    if (callback) callback();
+  }, 400);
+}
+
+function aplicarAnimacaoEntrada(elemento) {
+  if (!elemento) return;
+  
+  const animacoes = ['animate-in-down', 'animate-in-right'];
+  const animacao = animacoes[Math.floor(Math.random() * animacoes.length)];
+  
+  elemento.style.opacity = '0';
+  elemento.classList.add(animacao);
+  
+  setTimeout(() => {
+    elemento.classList.remove(animacao);
+    elemento.style.opacity = '';
+  }, 500);
+}
+
+function formatTime(seconds) {
+  if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+function updateVideoProgress() {
+  if (currentVideo && currentVideo.duration && !currentVideo.paused) {
+    const fillEl = document.getElementById("video-progress-fill");
+    const currentEl = document.getElementById("video-current-time");
+    const durationEl = document.getElementById("video-duration");
+    
+    if (fillEl && currentVideo.duration) {
+      const percent = (currentVideo.currentTime / currentVideo.duration) * 100;
+      fillEl.style.width = `${percent}%`;
+    }
+    if (currentEl) currentEl.textContent = formatTime(currentVideo.currentTime);
+    if (durationEl && currentVideo.duration) durationEl.textContent = formatTime(currentVideo.duration);
+  }
+}
+
+function setupVideoListeners(video) {
+  if (!video) return;
+  currentVideo = video;
+  
+  const progressContainer = document.getElementById("video-progress-container");
+  if (progressContainer) {
+    progressContainer.addEventListener('click', (e) => {
+      const rect = progressContainer.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const percent = x / rect.width;
+      if (currentVideo.duration) {
+        currentVideo.currentTime = percent * currentVideo.duration;
+      }
+    });
+  }
+  
+  video.addEventListener('loadedmetadata', () => {
+    const durationEl = document.getElementById("video-duration");
+    if (durationEl) durationEl.textContent = formatTime(video.duration);
+  });
+  
+  video.addEventListener('timeupdate', updateVideoProgress);
+  
+  if (progressInterval) clearInterval(progressInterval);
+  progressInterval = setInterval(updateVideoProgress, 200);
+}
+
+function limparMidias() {
+  if (progressInterval) {
+    clearInterval(progressInterval);
+    progressInterval = null;
+  }
+  if (currentVideo) {
+    currentVideo.pause();
+    currentVideo = null;
+  }
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio = null;
+  }
+}
+
+// Controles globais
+window.playVideo = () => { if (currentVideo) currentVideo.play(); };
+window.pauseVideo = () => { if (currentVideo) currentVideo.pause(); };
+window.replayVideo = () => { if (currentVideo) { currentVideo.currentTime = 0; currentVideo.play(); } };
+window.toggleFullscreen = () => {
+  if (!currentVideo) return;
+  if (!document.fullscreenElement) {
+    currentVideo.requestFullscreen().catch(e => console.log(e));
+  } else {
+    document.exitFullscreen();
+  }
+};
+window.muteVideo = () => { if (currentVideo) currentVideo.muted = !currentVideo.muted; };
+
+window.playAudio = () => { if (currentAudio) currentAudio.play(); };
+window.pauseAudio = () => { if (currentAudio) currentAudio.pause(); };
+window.replayAudio = () => { if (currentAudio) { currentAudio.currentTime = 0; currentAudio.play(); } };
+
+function renderizarExibidor(mensagem) {
+  const temVideo = mensagem.videoUrl && mensagem.videoUrl !== "";
+  const temAudio = mensagem.audioUrl && mensagem.audioUrl !== "";
+  const temImagem = mensagem.imagemUrl && mensagem.imagemUrl !== "";
+  const temMidia = temVideo || temAudio || temImagem;
+  const somenteTexto = !temMidia && mensagem.mensagem && mensagem.mensagem.trim() !== "";
+  const temMensagem = mensagem.mensagem && mensagem.mensagem.trim() !== "";
+  
+  let mediaHtml = "";
+  let messageClass = "";
+  
+  if (somenteTexto) messageClass = "only-text";
+  else if (temMidia) messageClass = "with-media";
+  
+  // Vídeo
+  if (temVideo) {
+    mediaHtml = `
+      <div class="video-player-card">
+        <div class="video-wrapper">
+          <video id="exibidor-video" playsinline>
+            <source src="${escapeHtml(mensagem.videoUrl)}" type="video/mp4">
+          </video>
+        </div>
+        <div class="video-controls">
+          <button onclick="playVideo()"><i class="fas fa-play"></i> Play</button>
+          <button onclick="pauseVideo()"><i class="fas fa-pause"></i> Pause</button>
+          <button onclick="replayVideo()"><i class="fas fa-redo-alt"></i> Replay</button>
+          <button onclick="toggleFullscreen()"><i class="fas fa-expand"></i> Tela Cheia</button>
+          <button onclick="muteVideo()"><i class="fas fa-volume-up"></i> Mudo</button>
+          <div class="video-progress-bar" id="video-progress-container">
+            <div class="video-progress-fill" id="video-progress-fill"></div>
+          </div>
+          <span class="video-time"><span id="video-current-time">0:00</span> / <span id="video-duration">0:00</span></span>
+        </div>
+      </div>
+    `;
+  } 
+  // Áudio
+  else if (temAudio) {
+    const waveBars = Array(16).fill().map((_, i) => 
+      `<div class="wave-bar" style="animation-delay: ${i * 0.05}s; height: ${25 + Math.sin(i) * 20}px;"></div>`
+    ).join('');
+    
+    mediaHtml = `
+      <div class="audio-player-card">
+        <div class="audio-visualizer">
+          ${waveBars}
+        </div>
+        <audio id="exibidor-audio" class="native-audio">
+          <source src="${escapeHtml(mensagem.audioUrl)}" type="audio/mpeg">
+        </audio>
+        <div class="audio-controls">
+          <button onclick="playAudio()"><i class="fas fa-play"></i> Play</button>
+          <button onclick="pauseAudio()"><i class="fas fa-pause"></i> Pause</button>
+          <button onclick="replayAudio()"><i class="fas fa-redo-alt"></i> Replay</button>
+          <span class="audio-time" id="audio-time-display">0:00 / 0:00</span>
+        </div>
+      </div>
+    `;
+  } 
+  // Imagem
+  else if (temImagem) {
+    mediaHtml = `
+      <div class="image-card">
+        <img src="${escapeHtml(mensagem.imagemUrl)}" alt="Imagem" onerror="this.src='/media/placeholder.png'">
+      </div>
+    `;
+  }
+  
+  // Avatar
+  const avatarHtml = mensagem.foto && mensagem.foto !== "/fotos/default.png" && mensagem.foto !== "" 
+    ? `<img class="exibidor-avatar" src="${escapeHtml(mensagem.foto)}" onerror="this.src='/fotos/default.png'" alt="${escapeHtml(mensagem.nome)}">`
+    : `<div class="exibidor-avatar-placeholder"><i class="fab fa-whatsapp"></i></div>`;
+  
+  const mensagemHtml = temMensagem ? `
+    <div class="exibidor-mensagem ${messageClass}">
+      <div class="exibidor-mensagem-label">
+        <i class="fas fa-comment-dots"></i> MENSAGEM
+      </div>
+      <div class="exibidor-mensagem-texto">${escapeHtml(mensagem.mensagem)}</div>
+    </div>
+  ` : '';
+  
+  const novoHtml = `
+    <div class="exibidor-header">
+      ${avatarHtml}
+      <div class="exibidor-info">
+        <div class="exibidor-nome">${escapeHtml(mensagem.nome)}</div>
+        <div class="exibidor-badge">
+          <i class="fas fa-clock"></i> ${escapeHtml(mensagem.horario || "agora")}
+        </div>
+      </div>
+    </div>
+    ${mensagemHtml}
+    ${mediaHtml}
+  `;
+  
+  const container = document.getElementById("dynamic-content");
+  const isVazio = container.querySelector('.empty-state') !== null;
+  
+  limparMidias();
+  
+  if (!isVazio && container.innerHTML !== novoHtml) {
+    mostrarIndicador();
+    aplicarAnimacaoSaida(container, () => {
+      container.innerHTML = novoHtml;
+      aplicarAnimacaoEntrada(container);
+      
+      setTimeout(() => {
+        if (temVideo) {
+          const video = document.getElementById("exibidor-video");
+          if (video) {
+            setupVideoListeners(video);
+            video.play().catch(e => console.log("Autoplay bloqueado:", e));
+          }
+        } else if (temAudio) {
+          const audio = document.getElementById("exibidor-audio");
+          if (audio) {
+            currentAudio = audio;
+            audio.addEventListener('loadedmetadata', () => {
+              const display = document.getElementById("audio-time-display");
+              if (display) display.textContent = `0:00 / ${formatTime(audio.duration)}`;
+            });
+            audio.addEventListener('timeupdate', () => {
+              const display = document.getElementById("audio-time-display");
+              if (display && audio.duration) {
+                display.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+              }
+            });
+            audio.play().catch(e => console.log("Autoplay bloqueado:", e));
+          }
+        }
+      }, 50);
+    });
+  } else if (isVazio) {
+    container.innerHTML = novoHtml;
+    aplicarAnimacaoEntrada(container);
+    setTimeout(() => {
+      if (temVideo) {
+        const video = document.getElementById("exibidor-video");
+        if (video) {
+          setupVideoListeners(video);
+          video.play().catch(e => console.log("Autoplay bloqueado:", e));
+        }
+      } else if (temAudio) {
+        const audio = document.getElementById("exibidor-audio");
+        if (audio) {
+          currentAudio = audio;
+          audio.addEventListener('loadedmetadata', () => {
+            const display = document.getElementById("audio-time-display");
+            if (display) display.textContent = `0:00 / ${formatTime(audio.duration)}`;
+          });
+          audio.addEventListener('timeupdate', () => {
+            const display = document.getElementById("audio-time-display");
+            if (display && audio.duration) {
+              display.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+            }
+          });
+          audio.play().catch(e => console.log("Autoplay bloqueado:", e));
+        }
+      }
+    }, 50);
+  }
+}
+
+function renderizarVazio() {
+  const container = document.getElementById("dynamic-content");
+  const vazioHtml = `
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <i class="fas fa-tv"></i>
+      </div>
+      <h3>Aguardando Conteúdo</h3>
+      <p>Aprove uma mensagem e clique em "Colocar NO AR"<br>para exibir aqui no vMix</p>
+    </div>
+  `;
+  
+  const isVazio = container.querySelector('.empty-state') !== null;
+  if (!isVazio) {
+    aplicarAnimacaoSaida(container, () => {
+      container.innerHTML = vazioHtml;
+      aplicarAnimacaoEntrada(container);
+      limparMidias();
+    });
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str).replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m] || m));
+}
+
+async function carregarExibidor() {
+  try {
+    await carregarBackground();
+    
+    const res = await fetch("/datasource");
+    const data = await res.json();
+    const mensagem = data[0];
+    
+    if (mensagem && mensagem.id !== ultimaMensagemId) {
+      ultimaMensagemId = mensagem.id;
+      if (mensagem.nome && mensagem.mensagem !== "Nenhuma mensagem no ar" && mensagem.nome !== "Sistema") {
+        renderizarExibidor(mensagem);
+      } else {
+        renderizarVazio();
+      }
+    }
+  } catch (error) {
+    console.error("Erro ao carregar exibidor:", error);
+  }
+}
+
+carregarExibidor();
+setInterval(carregarExibidor, 2500);
+
+// WebSocket
+try {
+  const socket = io();
+  if (socket) {
+    socket.on("gt:update", () => {
+      carregarExibidor();
+    });
+    socket.on("connect", () => {
+      console.log("Socket conectado - Exibidor em tempo real");
+    });
+  }
+} catch(e) {
+  console.log("WebSocket não disponível");
+}
+</script>
+</body>
+</html>
