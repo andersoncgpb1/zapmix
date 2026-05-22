@@ -517,9 +517,6 @@ button.full-width {
   font-size: 1rem;
 }
 
-/* ============================================
-   MODAL PERSONALIZADO ESTILO ELECTRON
-   ============================================ */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -692,10 +689,18 @@ button.full-width {
     </div>
 
     <!-- Status -->
-    <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
-      <div id="status-badge" class="status-badge ativa">
-        <i class="fas fa-play-circle"></i> <span>Ativa</span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div style="display: flex; gap: 8px;">
+        <div id="status-badge" class="status-badge ativa">
+          <i class="fas fa-play-circle"></i> <span>Ativa</span>
+        </div>
+        <div id="total-votos-badge" style="background: #e2e8f0; padding: 4px 12px; border-radius: 40px; font-size: 0.7rem; font-weight: 600;">
+          <i class="fas fa-users"></i> <span id="total-votos-count">0</span> votos
+        </div>
       </div>
+      <button class="red-danger" style="padding: 4px 12px; font-size: 0.65rem;" onclick="confirmarResetarVotos()">
+        <i class="fas fa-trash-alt"></i> Resetar Votos
+      </button>
     </div>
 
     <!-- Pergunta -->
@@ -723,8 +728,8 @@ button.full-width {
         <button onclick="confirmarAdicionarOpcao()"><i class="fas fa-plus-circle"></i> Adicionar</button>
         <button class="primary-green" onclick="salvarOpcoes()"><i class="fas fa-save"></i> Salvar</button>
         <button id="toggle-btn" class="yellow-warning" onclick="confirmarToggleEnquete()"><i class="fas fa-pause-circle"></i> Pausar</button>
-        <button class="red-danger" onclick="confirmarResetarVotos()"><i class="fas fa-trash-alt"></i> Resetar Votos</button>
         <button class="blue-accent" onclick="confirmarCarregarExemplo()"><i class="fas fa-chalkboard"></i> Exemplo</button>
+        <button class="blue-accent" onclick="exportarResultados()"><i class="fas fa-download"></i> Exportar</button>
       </div>
     </div>
 
@@ -739,6 +744,11 @@ button.full-width {
       <code id="vmix-url">carregando...</code>
       <div><button class="btn-copiar" onclick="copiarLink()"><i class="fas fa-copy"></i> Copiar Link</button></div>
     </div>
+    
+    <!-- Botão para abrir exibidor -->
+    <button class="primary-green full-width" onclick="window.open(document.getElementById('vmix-url').innerText, '_blank')" style="margin-top: 16px;">
+      <i class="fas fa-external-link-alt"></i> Abrir Exibidor da Enquete
+    </button>
   </div>
 
   <!-- COLUNA DIREITA - PRÉ-VISUALIZAÇÃO -->
@@ -754,6 +764,13 @@ button.full-width {
       <div id="preview-total" class="preview-total">
         <i class="fas fa-users"></i> <span>Total de votos: 0</span>
       </div>
+    </div>
+    
+    <!-- Vencedor atual -->
+    <div id="vencedor-box" style="margin-top: 20px; padding: 16px; background: linear-gradient(135deg, #dcfce7, #bbf7d0); border-radius: 20px; text-align: center; display: none;">
+      <i class="fas fa-trophy" style="color: #eab308; font-size: 1.2rem;"></i>
+      <span style="font-weight: 700;">Vencedor atual: </span>
+      <span id="vencedor-nome">-</span>
     </div>
   </div>
 </main>
@@ -857,9 +874,6 @@ function closeModal() {
   modal.classList.remove('active');
 }
 
-// ============================================================
-// TOAST
-// ============================================================
 function showToast(message, type = 'success') {
   const toast = document.getElementById('toast');
   toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i> ${message}`;
@@ -936,6 +950,39 @@ async function confirmarCarregarExemplo() {
 }
 
 // ============================================================
+// EXPORTAR RESULTADOS
+// ============================================================
+async function exportarResultados() {
+  try {
+    const enquete = await api("/api/enquete");
+    const data = new Date();
+    const dataStr = `${data.getFullYear()}-${data.getMonth()+1}-${data.getDate()}_${data.getHours()}-${data.getMinutes()}`;
+    
+    let csv = "Opção,Votos,Porcentagem\n";
+    enquete.opcoes.forEach(op => {
+      csv += `"${op.nome}",${op.votos || 0},${op.porcentagem || 0}%\n`;
+    });
+    csv += `\nTotal de votos,${enquete.totalVotos || 0},100%\n`;
+    csv += `Pergunta,"${enquete.pergunta}"\n`;
+    csv += `Data,${new Date().toLocaleString("pt-BR")}\n`;
+    
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute("download", `enquete_resultado_${dataStr}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    showToast('✅ Resultados exportados!', 'success');
+  } catch(e) {
+    showToast('Erro ao exportar', 'error');
+  }
+}
+
+// ============================================================
 // CARREGAR DADOS
 // ============================================================
 async function carregarPergunta() {
@@ -962,7 +1009,6 @@ async function carregarOpcoes() {
     const enquete = await api("/api/enquete");
     enqueteAtiva = enquete.ativa;
     
-    // Atualizar status badge
     const statusBadge = document.getElementById("status-badge");
     const toggleBtn = document.getElementById("toggle-btn");
     if (enqueteAtiva) {
@@ -976,6 +1022,8 @@ async function carregarOpcoes() {
       toggleBtn.innerHTML = '<i class="fas fa-play-circle"></i> Ativar';
       toggleBtn.className = "primary-green";
     }
+    
+    document.getElementById("total-votos-count").innerText = enquete.totalVotos || 0;
     
     if (enquete.opcoes && enquete.opcoes.length > 0) {
       opcoesAtuais = enquete.opcoes.map(op => ({
@@ -1108,6 +1156,7 @@ async function carregarPreview() {
     
     const totalVotos = enquete.totalVotos || 0;
     if (totalSpan) totalSpan.innerText = totalVotos;
+    document.getElementById("total-votos-count").innerText = totalVotos;
     
     container.innerHTML = enquete.opcoes.map(op => `
       <div class="preview-opcao">
@@ -1120,6 +1169,15 @@ async function carregarPreview() {
         </div>
       </div>
     `).join("");
+    
+    // Mostrar vencedor
+    const vencedorBox = document.getElementById("vencedor-box");
+    if (enquete.vencedor && totalVotos > 0) {
+      vencedorBox.style.display = "block";
+      document.getElementById("vencedor-nome").innerHTML = `<strong style="color: ${enquete.vencedor.cor}">${escapeHtml(enquete.vencedor.nome)}</strong> com ${enquete.vencedor.porcentagem}% dos votos`;
+    } else {
+      vencedorBox.style.display = "none";
+    }
   } catch(e) { console.log("Erro preview:", e); }
 }
 
@@ -1159,7 +1217,7 @@ function escapeHtml(str) {
 document.getElementById("vmix-url").innerText = getBaseUrl() + "/enquete-exibidor.html";
 carregarPergunta();
 carregarOpcoes();
-setInterval(carregarPreview, 5000);
+setInterval(carregarPreview, 3000);
 </script>
 </body>
 </html>
