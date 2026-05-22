@@ -4,6 +4,27 @@ const path = require("path");
 const fs = require("fs");
 const http = require("http");
 
+// ============================================================
+// PERMITIR APENAS UMA INSTÂNCIA DO APLICATIVO
+// ============================================================
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+    // Se já existe uma instância rodando, finaliza esta
+    console.log("⚠️ Aplicativo já está rodando! Finalizando esta instância...");
+    app.quit();
+    process.exit(0);
+}
+
+// Quando uma segunda instância tentar abrir, foca na janela principal
+app.on('second-instance', (event, commandLine, workingDirectory) => {
+    console.log("🔄 Tentativa de abrir nova instância. Focando na existente...");
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        if (mainWindow.isMinimized()) mainWindow.restore();
+        mainWindow.focus();
+    }
+});
+
 const { startZapMixServer } = require("./server");
 const { iniciarNDI, pararNDI } = require("./ndi-output");
 const { validarLicenca, verificarLicencaSalva } = require("./license-manager");
@@ -301,26 +322,32 @@ app.whenReady().then(async () => {
 });
 
 // ============================================================
-// FINALIZAR PROCESSO
+// FINALIZAR PROCESSO CORRETAMENTE
 // ============================================================
 app.on('window-all-closed', () => {
+    console.log("🛑 Fechando todas as janelas. Finalizando aplicativo...");
+    
     pararNDI();
 
     if (exibidorWindow && !exibidorWindow.isDestroyed()) {
-        exibidorWindow.close();
+        exibidorWindow.destroy();
+        exibidorWindow = null;
     }
 
     if (enqueteWindow && !enqueteWindow.isDestroyed()) {
-        enqueteWindow.close();
+        enqueteWindow.destroy();
+        enqueteWindow = null;
     }
 
     app.quit();
 });
 
-app.on('before-quit', () => {
+app.on('before-quit', (event) => {
+    console.log("🛑 Preparando para finalizar...");
     pararNDI();
 });
 
-app.on('will-quit', () => {
-    app.exit(0);
+app.on('will-quit', (event) => {
+    console.log("🛑 Finalizando aplicativo...");
+    process.exit(0);
 });

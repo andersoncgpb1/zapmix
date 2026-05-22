@@ -199,9 +199,26 @@ function iniciarWhatsApp() {
         if (!executablePath) { whatsappStatus = "erro"; console.log("❌ Navegador não encontrado"); emit(); return; }
         console.log("🌐 Navegador usado pelo WhatsApp:", executablePath);
         client = new Client({
-            authStrategy: new LocalAuth({ clientId: "zapmix", dataPath: authPath }),
-            puppeteer: { headless: true, executablePath, args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu", "--disable-extensions", "--disable-background-timer-throttling", "--disable-backgrounding-occluded-windows", "--disable-renderer-backgrounding"] }
-        });
+    authStrategy: new LocalAuth({
+        clientId: "zapmix",
+        dataPath: authPath
+    }),
+    puppeteer: {
+        headless: true,
+        executablePath,
+        args: [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+            "--disable-extensions",
+            "--disable-background-timer-throttling",
+            "--disable-backgrounding-occluded-windows",
+            "--disable-renderer-backgrounding"
+        ],
+        timeout: 120000  // ← AUMENTAR TIMEOUT para 2 minutos
+    }
+});
         client.on("qr", async qr => { whatsappStatus = "aguardando_qr"; qrCodeDataUrl = await QRCode.toDataURL(qr); console.log("📱 QR Code gerado!"); emit(); });
         client.on("ready", () => { whatsappStatus = "conectado"; qrCodeDataUrl = null; console.log("✅ WhatsApp conectado!"); emit(); });
         client.on("authenticated", () => console.log("🔐 WhatsApp autenticado"));
