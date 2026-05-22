@@ -87,13 +87,20 @@ header {
   font-weight: 500;
 }
 
-.btn-voltar {
+.header-buttons {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-header {
   background: #f1f5f9;
   border: 1px solid #e2e8f0;
-  padding: 8px 20px;
-  border-radius: 32px;
-  font-weight: 600;
-  font-size: 0.75rem;
+  padding: 12px 28px;
+  border-radius: 40px;
+  font-weight: 700;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: 0.2s;
   color: #1e293b;
@@ -101,15 +108,23 @@ header {
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
-.btn-voltar i {
-  font-size: 0.8rem;
+.btn-header i {
+  font-size: 1rem;
 }
-.btn-voltar:hover {
-  transform: translateY(-1px);
+.btn-header:hover {
+  transform: translateY(-2px);
   background: #ffffff;
   border-color: #90d105;
+}
+.btn-header.primary {
+  background: #90d105;
+  color: #0f2e00;
+  border-color: #7cb518;
+}
+.btn-header.primary:hover {
+  background: #a0e015;
 }
 
 main {
@@ -663,6 +678,13 @@ button.full-width {
   .botoes-rapidos {
     justify-content: center;
   }
+  .header-buttons {
+    gap: 8px;
+  }
+  .btn-header {
+    padding: 8px 16px;
+    font-size: 0.75rem;
+  }
 }
 </style>
 </head>
@@ -676,9 +698,17 @@ button.full-width {
       <div class="app-sub">Configurar Enquete</div>
     </div>
   </div>
-  <button class="btn-voltar" onclick="window.location.href='/'">
-    <i class="fas fa-arrow-left"></i> Voltar ao WhatsApp
-  </button>
+  <div class="header-buttons">
+    <button class="btn-header" onclick="window.location.href='/'">
+      <i class="fas fa-comment-dots"></i> Moderação
+    </button>
+    <button class="btn-header primary" onclick="window.location.href='/enquete.html'">
+      <i class="fas fa-chart-bar"></i> Enquete
+    </button>
+    <button class="btn-header" onclick="window.location.href='/config.html'">
+      <i class="fas fa-sliders-h"></i> Configurações
+    </button>
+  </div>
 </header>
 
 <main>
